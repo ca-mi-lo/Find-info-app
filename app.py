@@ -18,7 +18,7 @@ def index_pdf_file():
         if ss['filename'] != ss.get('filename_done'):
             with st.spinner(_('indexing ')+ ss['filename']):
                 index = model.index_file(ss['pdf_file'], ss['filename'], 
-                                         doc_size=500)
+                                         doc_size=1024, doc_overlap=100)
                 ss['index'] = index
                 debug_index()
                 ss['filename_done'] = ss['filename']
@@ -64,18 +64,29 @@ def ui_context():
                  help='', label_visibility='collapsed', disabled=disabled)
 
 def b_ask():
-    disabled = True
-    if st.button(_('get_answer'), disabled=disabled, type='primary'):
+    disabled = not ss.get('index')
+    c1, c2, c3 = st.columns([2, 1, 1])
+    if c2.button(':thumbsup:', use_container_width=True, disabled=not ss.get('output')):
+        pass
+    if c3.button(':thumbsdown:', use_container_width=True, disabled=not ss.get('output')):
+        pass
+    if c1.button(_('get_answer'), use_container_width=True, disabled=disabled, type='primary'):
         question = ss.get('question', '')
         temperature = 0.1
         task = TASK['V1']
         max_frags = 1
-        n_before = 1
+        n_before = 0
         n_after = 0 
-        index = {}
+        index: dict = ss.get('index', {})
         with st.spinner(_('preparing answer')):
-            resp = model.query()
-
+            resp = model.query(
+                 question, 
+                 index,
+                 temperature=temperature
+            )
+            ss['debug']['executed_response'] = True
+            ss['debug']['answer'] = resp
+ 
 
 def ui_debug():
     if ss.get('show_debug'):

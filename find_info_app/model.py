@@ -1,13 +1,14 @@
 import hashlib
 from time import time as now
-from typing import IO
+from typing import IO, Any, Optional
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.prompts.prompt import PromptTemplate
-from langchain_community.vectorstores import Chroma
+from langchain_community.vectorstores import Chroma, VectorStore
 
 from .pdf import MyAppPDFLoader
 from . import ai
+from .prompts import documents_to_str
 
 
 def index_file(f: IO[bytes], filename: str,
@@ -52,5 +53,16 @@ def index_file(f: IO[bytes], filename: str,
     return index
 
 
-def query():
-    pass
+def query(text: str, index: dict, temperature: float=0.0, max_frags: int=1, limit: Optional[int]=None,
+          n_before:int =1, n_after: int=1, model: Optional[str]=None):
+    out: dict[str, Any] = {'run': now()}
+
+    db = index['store']
+    retriever = db.as_retriever(search_type='mmr', search_kwargs={'k':5, 'lambda_mult':0.2})
+
+    selected_docs = retriever.get_relevant_documents(text)
+    selected_docs = documents_to_str(selected_docs)
+
+    out.update({'docs_str': selected_docs})
+
+    return out
