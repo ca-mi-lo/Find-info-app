@@ -15,7 +15,6 @@ ss = st.session_state
 if "debug" not in ss:
     ss["debug"] = {}
 
-
 def index_pdf_file():
     if ss["pdf_file"]:
         ss["filename"] = ss["pdf_file"].name
@@ -45,7 +44,7 @@ def ui_spacer(n=2, line=False, next_n=0):
     for _ in range(n):
         st.write("")
     if line:
-        st.tabs([" "])
+        st.divider()
     for _ in range(next_n):
         st.write("")
 
@@ -96,7 +95,7 @@ def b_ask():
     ):
         pass
     if c1.button(
-        _("get_answer"), use_container_width=True, disabled=disabled, type="primary"
+        _("get answer"), use_container_width=True, disabled=disabled, type="primary"
     ):
         question = ss.get("question", "")
         temperature = 0.1
@@ -133,7 +132,6 @@ def ui_debug():
         st.write("## Debug")
         st.write(ss.get("debug", {}))
 
-
 with st.sidebar:
     st.write(
         f"""
@@ -143,6 +141,13 @@ with st.sidebar:
     {_("Question answering system built on top of Gemini Pro")}
     """
     )
+    ui_spacer()
+    if st.selectbox(_('Choose you language'), ['en', 'es'], key="language"):
+        lang = ss.get("language", "en")
+        ss["debug"]["language"] = lang
+        localizator = gettext.translation('messages', localedir="locale", languages=[lang], fallback=True)
+        localizator.install()
+        _ = localizator.gettext
 
 ui_pdf_file()
 ui_context()

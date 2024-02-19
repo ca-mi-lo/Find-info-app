@@ -1,0 +1,62 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-02-19 16:32-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: app.py:35
+msgid "indexing "
+msgstr ""
+
+#: app.py:70
+msgid "## Upload or select your PDF file"
+msgstr ""
+
+#: app.py:71
+msgid "UPLOAD"
+msgstr ""
+
+#: app.py:71
+msgid "SELECT"
+msgstr ""
+
+#: app.py:74
+msgid "pdf file"
+msgstr ""
+
+#: app.py:81
+msgid "### Coming soon!"
+msgstr ""
+
+#: app.py:86
+msgid "## What are you looking for"
+msgstr ""
+
+#: app.py:94
+msgid "Enter question here"
+msgstr ""
+
+#: app.py:111
+msgid "get answer"
+msgstr ""
+
+#: app.py:120
+msgid "preparing answer"
+msgstr ""
+
+#: app.py:158
+msgid "Choose you language"
+msgstr ""
