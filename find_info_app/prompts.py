@@ -19,7 +19,7 @@ def documents_to_str(docs: Sequence[Document], sep: str="\n") -> str:
 
         new_documents.append(new_doc)
 
-    transform_prompt = PromptTemplate.from_template('Text {idx}: {page_content}')
+    transform_prompt = PromptTemplate.from_template('Fragment {idx}: {page_content}')
     out = [format_document(doc, transform_prompt) for doc in new_documents]
     
     return sep.join(out)

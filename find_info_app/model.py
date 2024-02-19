@@ -4,7 +4,7 @@ from typing import IO, Any, Optional
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.prompts.prompt import PromptTemplate
-from langchain_community.vectorstores import Chroma, VectorStore
+from langchain_community.vectorstores import Chroma
 
 from .pdf import MyAppPDFLoader
 from . import ai
@@ -30,10 +30,12 @@ def index_file(f: IO[bytes], filename: str,
     store = Chroma.from_documents(data, embedding)
 
     t2 = now()
-    summary_tmpl = PromptTemplate.from_template(
-        '''Describe the document from which the fragment is extracted. Omit any details.
-        Text:{doc}''')
-    summary = ai.complete(summary_tmpl.format(doc=data[0].page_content))
+    summary_tmpl = PromptTemplate.from_template('''
+    Describe the document from which the fragment is extracted. Omit any details.
+    Text:{doc}
+    ''')
+    summary = ai.complete(summary_tmpl.format(doc=data[0].page_content), 
+                          temperature=0.1)
     t3 = now()
 
     index = {
@@ -53,16 +55,37 @@ def index_file(f: IO[bytes], filename: str,
     return index
 
 
-def query(text: str, index: dict, temperature: float=0.0, max_frags: int=1, limit: Optional[int]=None,
-          n_before:int =1, n_after: int=1, model: Optional[str]=None):
+def query(text: str, task: str, index: dict, temperature: float=0.0, 
+          max_frags: int=1, limit: Optional[int]=None, n_before:int =1, 
+          n_after: int=1, model: Optional[str]=None) -> dict:
     out: dict[str, Any] = {'run': now()}
 
     db = index['store']
     retriever = db.as_retriever(search_type='mmr', search_kwargs={'k':5, 'lambda_mult':0.2})
 
+    t0 = now()
     selected_docs = retriever.get_relevant_documents(text)
     selected_docs = documents_to_str(selected_docs)
+    t1 = now()
+    context_len = ai.get_token_count(selected_docs)
 
-    out.update({'docs_str': selected_docs})
+    prompt = PromptTemplate.from_template('''{task}
+    Text: {selected_docs}
+    Question: {question} 
+    The answer is:
+    ''')
+
+    msg = prompt.format(task=task, selected_docs=selected_docs, question=text)
+
+    t2 = now()
+    resp = ai.complete(msg, temperature)
+    t3 = now()
+
+    out = {
+        'msg': msg,
+        'text': resp,
+        'context_lenght': context_len,
+        'profiling': {'retrive_docs': t1-t0, 'reasoning_time': t3-t2}
+    }
 
     return out

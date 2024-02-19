@@ -1,6 +1,5 @@
 import gettext
 _ = gettext.gettext
-from time import time
 
 import streamlit as st
 import find_info_app
@@ -8,7 +7,7 @@ from find_info_app.prompts import TASK
 import find_info_app.model as model
 
 st.set_page_config(layout="centered", 
-                   page_title=f'{find_info_app.app_name} {find_info_app.__version__}')
+                   page_title=f'{find_info_app.__app_name__} {find_info_app.__version__}')
 ss = st.session_state
 if 'debug' not in ss: ss['debug'] = {}
 
@@ -80,24 +79,44 @@ def b_ask():
         index: dict = ss.get('index', {})
         with st.spinner(_('preparing answer')):
             resp = model.query(
-                 question, 
+                 question,
+                 task,
                  index,
                  temperature=temperature
             )
             ss['debug']['executed_response'] = True
             ss['debug']['answer'] = resp
+
+        q = question.strip()
+        a = resp['text'].strip()
+
+        output_add(q,a)
  
+def ui_output():
+    output = ss.get('output', '')
+    st.write(output)
+
+def output_add(q, a):
+    if 'output' not in ss: ss['output'] = ''
+    new_resp = f'### {q}\n{a}\n\n'
+    ss['output'] =  new_resp + ss['output']
 
 def ui_debug():
     if ss.get('show_debug'):
         st.write('## Debug')
         st.write(ss.get('debug', {}))
 
+with st.sidebar:
+    st.write(f'''
+    # {find_info_app.__app_name__}
+    version ({find_info_app.__version__})
 
-st.title("Find info App")
+    {_("Question answering system built on top of Gemini Pro")}
+    ''')
 
 ui_pdf_file()
 ui_context()
 b_ask()
+ui_output()
 ui_show_debug()
 ui_debug()

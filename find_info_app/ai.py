@@ -10,9 +10,16 @@ def get_embedding(model: str=BASE_EMBEDDING_MODEL):
                                         task_type='retrieval_query')
 
 
-def complete(text: str, **kwargs:str):
+def get_token_count(text: str, **kwargs: str) -> int:
     model = kwargs.get('model', BASE_MODEL)
     llm = GoogleGenerativeAI(model=model)
+
+    return llm.get_num_tokens(text)
+
+
+def complete(text: str, temperature: float=0.0, **kwargs: str):
+    model = kwargs.get('model', BASE_MODEL)
+    llm = GoogleGenerativeAI(model=model, temperature=temperature)
 
     resp = llm.invoke(text)
     
