@@ -15,17 +15,25 @@ ss = st.session_state
 if "debug" not in ss:
     ss["debug"] = {}
 
+
 def index_pdf_file():
     if ss["pdf_file"]:
         ss["filename"] = ss["pdf_file"].name
         if ss["filename"] != ss.get("filename_done"):
             with st.spinner(_("indexing ") + ss["filename"]):
                 index = model.index_file(
-                    ss["pdf_file"], ss["filename"], doc_size=1024, doc_overlap=100
+                    ss["pdf_file"],
+                    ss["filename"],
+                    doc_size=ss["doc_size"],
+                    doc_overlap=ss["doc_overlap"] * ss["doc_size"],
                 )
                 ss["index"] = index
                 debug_index()
                 ss["filename_done"] = ss["filename"]
+    else:
+        ss.pop("index")
+        ss.pop("filename")
+        ss["debug"].pop("index")
 
 
 def debug_index():
@@ -73,7 +81,7 @@ def ui_context():
         _("## What are you looking for")
         + (f" in {ss.filename}" if ss.get("filename") else "")
     )
-    disabled = False
+    disabled = not ss.get("index")
     st.text_area(
         "question",
         key="question",
@@ -99,7 +107,7 @@ def b_ask():
     ):
         question = ss.get("question", "")
         temperature = 0.1
-        task = TASK["V1"]
+        task = ss["task"]
         max_frags = 1
         n_before = 0
         n_after = 0
@@ -132,6 +140,7 @@ def ui_debug():
         st.write("## Debug")
         st.write(ss.get("debug", {}))
 
+
 with st.sidebar:
     st.write(
         f"""
@@ -142,12 +151,34 @@ with st.sidebar:
     """
     )
     ui_spacer()
-    if st.selectbox(_('Choose you language'), ['en', 'es'], key="language"):
+    if st.selectbox(_("Choose you language"), ["en", "es"], key="language"):
         lang = ss.get("language", "en")
         ss["debug"]["language"] = lang
-        localizator = gettext.translation('messages', localedir="locale", languages=[lang], fallback=True)
+        localizator = gettext.translation(
+            "messages", localedir="locale", languages=[lang], fallback=True
+        )
         localizator.install()
         _ = localizator.gettext
+    with st.expander(_("Advanced settings")):
+        st.select_slider(
+            _("Document size"),
+            options=[200, 500, 1000, 1500],
+            value=1000,
+            key="doc_size",
+            disabled=True,
+        )
+        st.select_slider(
+            _("Overlap ratio"),
+            options=[0.05, 0.1, 0.15, 0.2],
+            value=0.1,
+            format_func=lambda x: f"{int(x*100)}%",
+            key="doc_overlap",
+            disabled=True,
+        )
+        st.selectbox(_("Task"), TASK.keys(), key="task",
+                     help=_("Base prompt used to generate the answer to the question"),
+                     disabled=True)
+
 
 ui_pdf_file()
 ui_context()

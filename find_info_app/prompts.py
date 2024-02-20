@@ -6,7 +6,7 @@ from langchain_core.prompts import PromptTemplate, format_document
 
 TASK = {
     "V1": (
-        "Answer the question using the text below. Use the text provided as"
+        "Answer the question and explain the reasoning. Use the text provided as"
         " a context"
     )
 }

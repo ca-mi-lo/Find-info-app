@@ -1,8 +1,10 @@
 from langchain_google_genai.llms import GoogleGenerativeAI
 from langchain_google_genai.embeddings import GoogleGenerativeAIEmbeddings
 
-BASE_MODEL = "gemini-pro"
-BASE_EMBEDDING_MODEL = "models/embedding-001"
+AVAILABLE_EMBEDDINGS = ["models/embedding-001"]
+AVAILABLE_MODELS = ["gemini-pro"]
+BASE_MODEL = AVAILABLE_MODELS[0]
+BASE_EMBEDDING_MODEL = AVAILABLE_EMBEDDINGS[0]
 
 
 def get_embedding(model: str = BASE_EMBEDDING_MODEL):
