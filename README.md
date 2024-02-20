@@ -24,7 +24,33 @@ Future Plans:
 - Add support for additional file formats.
 - Improve the summarization algorithm for more accurate and informative summaries.
 
-## Run the application
+## Run the Application
 
-Install the app
+### Generate Translation Messages Binary
+To create the translation message binaries, execute the following command:
 
+```
+msgfmt -o locale/es/LC_MESSAGES/messages.mo locale/es/LC_MESSAGES/messages.po
+```
+
+### Install Application for Development
+
+To install the application for development, first, ensure you have 
+[Poetry](https://python-poetry.org/) installed. Then, clone the repository:
+
+```
+git clone 
+```
+
+Navigate to the cloned repository and run `poetry install`. Afterward, you 
+can run the application:
+
+```
+poetry run GOOGLE_API_KEY=your_api_key streamlit run app.py
+```
+
+Before running the application, make sure to obtain a Google API key 
+from [Google Developers Console](https://makersuite.google.com/app/apikey) 
+and define it as an environmental variable (replace `your_api_key` with your 
+actual API key). This key is required for certain features of the application 
+to function properly.
