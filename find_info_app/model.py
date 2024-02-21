@@ -64,29 +64,27 @@ def query(
     text: str,
     task: str,
     index: dict,
-    temperature: float = 0.0,
-    max_frags: int = 1,
-    limit: Optional[int] = None,
-    n_before: int = 1,
-    n_after: int = 1,
-    model: Optional[str] = None,
+    temperature: float = 0.2
 ) -> dict:
     out: dict[str, Any] = {"run": now()}
 
-    db = index["store"]
-    retriever = db.as_retriever(
-        search_type="mmr", search_kwargs={"k": 5, "lambda_mult": 0.2}
-    )
+    db: Chroma = index["store"]
+
+    embedding = ai.get_embedding(task_type='retrieval_query')
 
     t0 = now()
-    selected_docs = retriever.get_relevant_documents(text)
+    query_vector = embedding.embed_query(text)
+    selected_docs = db.max_marginal_relevance_search_by_vector(
+            embedding= query_vector,
+            k=5,
+            lambda_mult=0.2)
     selected_docs = documents_to_str(selected_docs)
     t1 = now()
     context_len = ai.get_token_count(selected_docs)
 
     prompt = PromptTemplate.from_template(
         """{task}
-    Text: {selected_docs}
+    {selected_docs}
     Question: {question} 
     The answer is:
     """

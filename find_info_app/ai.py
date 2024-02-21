@@ -7,8 +7,8 @@ BASE_MODEL = AVAILABLE_MODELS[0]
 BASE_EMBEDDING_MODEL = AVAILABLE_EMBEDDINGS[0]
 
 
-def get_embedding(model: str = BASE_EMBEDDING_MODEL):
-    return GoogleGenerativeAIEmbeddings(model=model, task_type="retrieval_query")
+def get_embedding(model: str = BASE_EMBEDDING_MODEL, task_type: str="retrieval_document"):
+    return GoogleGenerativeAIEmbeddings(model=model, task_type=task_type)
 
 
 def get_token_count(text: str, **kwargs: str) -> int:

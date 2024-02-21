@@ -107,10 +107,7 @@ def b_ask():
     ):
         question = ss.get("question", "")
         temperature = 0.1
-        task = ss["task"]
-        max_frags = 1
-        n_before = 0
-        n_after = 0
+        task = TASK[ss["task"]]
         index: dict = ss.get("index", {})
         with st.spinner(_("preparing answer")):
             resp = model.query(question, task, index, temperature=temperature)
@@ -171,10 +168,11 @@ with st.sidebar:
             _("Overlap ratio"),
             options=[0.05, 0.1, 0.15, 0.2],
             value=0.1,
-            format_func=lambda x: f"{int(x*100)}%",
+            format_func=lambda x: f"{x:2.0%}",
             key="doc_overlap",
             disabled=True,
         )
+        st.slider(_("Temperature"), min_value=0.0, max_value=1.0, value=0.2, step=0.1, format="%1.1f", disabled=True)
         st.selectbox(_("Task"), TASK.keys(), key="task",
                      help=_("Base prompt used to generate the answer to the question"),
                      disabled=True)
