@@ -49,9 +49,8 @@ def index_file(
         "n_docs": len(data),
         "store": store,
         "summary": summary,
-        "docs": data,
         "filename": filename,
-        "file_hash": f"sha1: {sha}",
+        "file_hash": sha,
         "filesize": filesize,
         "model": ai.BASE_MODEL,  # TODO: fix this line
         "profiling": {"load_docs": t1 - t0, "embed_docs": t2 - t1, "summary": t3 - t2},
@@ -64,7 +63,8 @@ def query(
     text: str,
     task: str,
     index: dict,
-    temperature: float = 0.2
+    temperature: float = 0.2,
+    max_frags: int = 5
 ) -> dict:
     out: dict[str, Any] = {"run": now()}
 
@@ -76,7 +76,7 @@ def query(
     query_vector = embedding.embed_query(text)
     selected_docs = db.max_marginal_relevance_search_by_vector(
             embedding= query_vector,
-            k=5,
+            k=max_frags,
             lambda_mult=0.2)
     selected_docs = documents_to_str(selected_docs)
     t1 = now()
