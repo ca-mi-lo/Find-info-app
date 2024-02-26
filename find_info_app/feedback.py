@@ -47,12 +47,16 @@ class ESFeedback(BaseFeedback):
         if not is_elasticsearch_available:
             raise ImportError("elasticsearch package not found, please install it.")
         conn_str = f"{host}:{port}"
-        self.es = Elasticsearch(conn_str, max_retries=5)
+        self.es = Elasticsearch(hosts=[conn_str], max_retries=5)
         self.index = index
 
     def send(self, score: int, sessionInfo: SessionStateProxy) -> bool:
         id, feedback_doc = self._build_feedback_doc(sessionInfo)
         feedback_doc.update({"score": score})
-        resp = self.es.index(index=self.index, id=id, body=feedback_doc)
-
-        return resp
+        try:
+            resp = self.es.index(index=self.index, id=id, body=feedback_doc)
+            if resp.meta.status == 200:
+                return True
+            return False
+        except ConnectionError:
+            return False
