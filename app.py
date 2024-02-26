@@ -230,7 +230,7 @@ with st.sidebar:
         )
 
 if not os.getenv("GOOGLE_API_KEY"):
-    st.error(_("Google API key does not supplied"), icon="🚨")
+    st.error(_("Google API Key was not provided"), icon="🚨")
 
 ui_pdf_file()
 ui_context()
