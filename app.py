@@ -55,7 +55,6 @@ def debug_index():
     d = {
         "file_hash": index["file_hash"],
         "n_docs": index["n_docs"],
-        "first_doc": index["docs"][0],
         "summary": index["summary"],
         "profiling": index["profiling"],
     }

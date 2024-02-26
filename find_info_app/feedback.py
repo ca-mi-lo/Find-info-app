@@ -1,6 +1,7 @@
 import pickle
 from hashlib import sha1
 from typing import Tuple
+import elasticsearch
 from streamlit.runtime.state import SessionStateProxy
 
 try:
@@ -58,5 +59,5 @@ class ESFeedback(BaseFeedback):
             if resp.meta.status == 200:
                 return True
             return False
-        except ConnectionError:
+        except elasticsearch.ConnectionError:
             return False
