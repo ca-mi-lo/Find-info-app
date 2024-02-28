@@ -56,7 +56,7 @@ class ESFeedback(BaseFeedback):
         feedback_doc.update({"score": score})
         try:
             resp = self.es.index(index=self.index, id=id, body=feedback_doc)
-            if resp.meta.status == 200:
+            if resp.meta.status in [200, 201]:
                 return True
             return False
         except elasticsearch.ConnectionError:

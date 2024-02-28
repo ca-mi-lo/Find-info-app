@@ -139,12 +139,13 @@ def b_ask():
                 max_frags=ss["max_frags"],
             )
             ss["debug"]["executed_response"] = True
-            ss["debug"]["answer"] = resp
 
+        ss["debug"]["answer"] = resp
         q = question.strip()
         a = resp["text"].strip()
 
         output_add(q, a)
+        st.rerun() # it is necessary to enable feedback buttons
 
 
 def ui_output():
@@ -200,7 +201,7 @@ with st.sidebar:
             key="doc_overlap",
             disabled=True,
         )
-        st.write("**Answering options**")
+        st.write(_("**Answering options**"))
         st.slider(
             _("Temperature"),
             min_value=0.0,

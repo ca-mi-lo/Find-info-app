@@ -6,57 +6,106 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-19 16:32-0600\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2024-02-27 12:32-0600\n"
+"PO-Revision-Date: 2024-02-27 10:44\n"
+"Last-Translator: Juan M Barrios <juan.barrios@conabio.gob.mx>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: app.py:35
+#: app.py:37
 msgid "indexing "
 msgstr "indizando "
 
-#: app.py:70
+#: app.py:79
 msgid "## Upload or select your PDF file"
 msgstr "## Carga o selecciona un archivo PDF"
 
-#: app.py:71
+#: app.py:80
 msgid "UPLOAD"
 msgstr "CARGA"
 
-#: app.py:71
+#: app.py:80
 msgid "SELECT"
 msgstr "SELECCIONA"
 
-#: app.py:74
+#: app.py:83
 msgid "pdf file"
 msgstr "archivo pdf"
 
-#: app.py:81
+#: app.py:91
 msgid "### Coming soon!"
 msgstr "### ¡Próximamente!"
 
-#: app.py:86
+#: app.py:96
 msgid "## What are you looking for"
 msgstr "## ¿Qué estás buscando"
 
-#: app.py:94
+#: app.py:104
 msgid "Enter question here"
 msgstr "Escribe tu pregunta aquí"
 
-#: app.py:111
+#: app.py:116 app.py:123
+msgid ":white_check_mark: Thanks!"
+msgstr ":white_check_mark: ¡Gracias!"
+
+#: app.py:118 app.py:125
+msgid ":exclamation: Failed to send feedback"
+msgstr ":exclamation: Falló el envio de retroalimentación"
+
+#: app.py:128
 msgid "get answer"
 msgstr "pregunta"
 
-#: app.py:120
+#: app.py:133
 msgid "preparing answer"
 msgstr "preparando la respuesta"
 
-#: app.py:158
+#: app.py:179
 msgid "Choose you language"
 msgstr "Selecciona tu idioma"
+
+#: app.py:187
+msgid "Advanced settings"
+msgstr "Preferencias avanzadas"
+
+#: app.py:188
+msgid "**Indexing options**"
+msgstr "**Opciones de indizado**"
+
+#: app.py:190
+msgid "Document size"
+msgstr "Tamaño del fragmento"
+
+#: app.py:197
+msgid "Overlap ratio"
+msgstr "Porcentaje de traslape"
+
+#: app.py:204
+#, fuzzy
+msgid "**Answering options**"
+msgstr "**Opciones de respuesta**"
+
+#: app.py:206
+msgid "Temperature"
+msgstr "Temperatura"
+
+#: app.py:216
+msgid "No. of frag retrieved"
+msgstr "No. de fragmentos recuperados"
+
+#: app.py:225
+msgid "Task"
+msgstr "Tarea"
+
+#: app.py:228
+msgid "Base prompt used to generate the answer to the question"
+msgstr "Prompt base usado para generar la respuesta"
+
+#: app.py:233
+msgid "Google API Key was not provided"
+msgstr "Llave del API de Google no proporcionada"
