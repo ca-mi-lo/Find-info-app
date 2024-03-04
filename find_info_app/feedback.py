@@ -1,7 +1,6 @@
 import pickle
 from hashlib import sha1
 from typing import Tuple
-import elasticsearch
 from streamlit.runtime.state import SessionStateProxy
 
 try:
