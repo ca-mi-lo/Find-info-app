@@ -2,6 +2,7 @@ import hashlib
 from time import time as now
 from typing import IO, Any, Optional
 
+import langchain_core
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.prompts.prompt import PromptTemplate
 from langchain_community.vectorstores import Chroma
@@ -10,26 +11,36 @@ from .pdf import MyAppPDFLoader
 from . import ai
 from .prompts import documents_to_str
 
+#def init_empty_chroma():
+#    store = Chroma.from_documents(documents embeddings=ai.get_embedding())
+#    return store
 
 def index_file(
-    f: IO[bytes], filename: str, doc_size: int = 250, doc_overlap: int = 0
+    f: IO[bytes], filename: str, doc_size: int = 250, doc_overlap: int = 0, store = None
 ) -> dict:
-    h = hashlib.sha1(usedforsecurity=False)
+    h = hashlib.sha1(usedforsecurity = False)
     h.update(f.read())
     sha = h.hexdigest()
     filesize = f.tell()
     f.seek(0)
-    pdf_loader = MyAppPDFLoader(f, source=filename)
+    pdf_loader = MyAppPDFLoader(f, source = filename)
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=doc_size, chunk_overlap=doc_overlap
+        chunk_size = doc_size, chunk_overlap = doc_overlap
     )
     t0 = now()  # load_docs
     data = pdf_loader.load_and_split(text_splitter=text_splitter)
     t1 = now()
 
     embedding = ai.get_embedding()
-
-    store = Chroma.from_documents(data, embedding)
+    # Extract content if data is a list of documents
+    if isinstance(data[0], langchain_core.documents.base.Document):
+        content_list = [doc for doc in data]
+    else:
+        # Handle other data types for 'data' (if applicable)
+        pass
+    
+    #store = Chroma.add_documents(data, embedding)
+    store = Chroma.from_documents(content_list, embedding)
 
     t2 = now()
     summary_tmpl = PromptTemplate.from_template(
