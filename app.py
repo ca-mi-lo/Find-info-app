@@ -33,14 +33,12 @@ if "filename_list_done" not in ss:
 
 def index_pdf_file():
 
-    
-    
     if ss["pdf_file_list"]:
 
         for pdf_file in ss["pdf_file_list"]:
             filename = pdf_file.name
 
-            if filename not in ss.get("filename_list_done"): # TODO definir  as a list. filename NOT IN filename_list_done
+            if filename not in ss.get("filename_list_done"):
 
                 with st.spinner(_("indexing ") + filename):
                     index = model.index_file(
@@ -63,7 +61,7 @@ def index_pdf_file():
 
                     debug_index()
 
-                    ss["filename_list_done"].append(filename)  # Update for all processed files
+                    ss["filename_list_done"].append(filename)  # 
                     
         #--------------------------------------------------
     else:
@@ -71,6 +69,14 @@ def index_pdf_file():
         ss.pop("filename_list")
         ss["debug"].pop("index_list")
         ss.pop("pdf_file_list")
+        
+        # TODO: What if  
+        # t1. A.pdf + B.pdf are uploaded, 
+        # t2. A.pdf is deleted 
+        # t3. A.pdf is re-loaded 
+        # Does it persist in filename_list_done after t2? (B.pdf in ss["pdf_file_list"] == True )
+        
+        # ss.pop("filename_list_done") if  ss["pdf_file_list"] == False?
 
 
 def debug_index():
@@ -88,7 +94,6 @@ def debug_index():
         debug_info.append(d)
 
     ss["debug"]["index_list"] = debug_info  # Store the list of debug info
-
 
 
 def ui_spacer(n=2, line=False, next_n=0):
@@ -113,7 +118,7 @@ def ui_pdf_file():
             _("pdf file"),
             type = "pdf",
             key = "pdf_file_list", # new key name
-            accept_multiple_files = True, # THE parameter
+            accept_multiple_files = True, # New parameter
             label_visibility = "collapsed",
             on_change = index_pdf_file,
             disabled = disabled,
@@ -124,11 +129,11 @@ def ui_pdf_file():
 
 def ui_context():
 
-    filename_text = ""  # Initialize empty string for filename
+    filename_text = ""  # init
+    # TODO: IF statement needed?  ss.get is enough?
     if ss.get("filename_list", ""):
-        filename_text = ",  ".join(ss["filename_list"])  # Join filenames if multiple
+        filename_text = ",  ".join(ss["filename_list"]) 
     
-    # no me queda claro que alguna vez entre a este elif
     elif ss.get("filename"):
         filename_text = ss.filename
 
@@ -173,7 +178,7 @@ def b_ask():
         task = TASK[ss["task"]]
         all_answers = []
         
-        # hard code for first dimention trivial solution: 
+        # (debugg-mode) hard code for dim=1. 
         # index = ss.get("index_list", [])[0] if ss.get("index_list") else {}
         
         # Loop through each index in ss["index_list"]
@@ -188,11 +193,12 @@ def b_ask():
                 )
                 ss["debug"]["executed_response"] = True
                 
-            all_answers.append(resp)  # Append answer to the list
+            all_answers.append(resp)  
         
-        #ss["debug"]["answer"] = resp
+        
         # multi answer in session
         combined_answer = "\n".join([answer["text"] for answer in all_answers])
+        # dim=1. ss["debug"]["answer"] = resp
         ss["debug"]["answer"] = combined_answer
         
         q = question.strip()
