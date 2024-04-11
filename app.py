@@ -31,7 +31,11 @@ if "debug" not in ss:
 if "filename_list_done" not in ss:
     ss["filename_list_done"] = []
 
+
 def index_pdf_file():
+
+    #store = model.init_empty_chroma()
+    store = None
 
     if ss["pdf_file_list"]:
 
@@ -46,6 +50,7 @@ def index_pdf_file():
                         filename,
                         doc_size=ss["doc_size"],
                         doc_overlap=int(ss["doc_overlap"] * ss["doc_size"]),
+                        store = store # new param
                     )
                     
                     # Update session state with lists (assuming index is a list)
@@ -179,31 +184,31 @@ def b_ask():
         all_answers = []
         
         # (debugg-mode) hard code for dim=1. 
-        # index = ss.get("index_list", [])[0] if ss.get("index_list") else {}
+        index = ss.get("index_list", [])[0] if ss.get("index_list") else {}
         
         # Loop through each index in ss["index_list"]
-        for index in ss.get("index_list", []):
-            with st.spinner(_("preparing answer")):
-                resp = model.query(
-                    question,
-                    task,
-                    index,
-                    temperature=ss["temperature"],
-                    max_frags=ss["max_frags"],
-                )
-                ss["debug"]["executed_response"] = True
-                
-            all_answers.append(resp)  
-        
+        # for index in ss.get("index_list", []):
+        with st.spinner(_("preparing answer")):
+            resp = model.query(
+                question,
+                task,
+                index,
+                temperature=ss["temperature"],
+                max_frags=ss["max_frags"],
+            )
+            ss["debug"]["executed_response"] = True
+            
+        # out:all_answers.append(resp)  
         
         # multi answer in session
-        combined_answer = "\n".join([answer["text"] for answer in all_answers])
-        # dim=1. ss["debug"]["answer"] = resp
-        ss["debug"]["answer"] = combined_answer
+        #combined_answer = "\n".join([answer["text"] for answer in all_answers])
+        # dim=1. 
+        ss["debug"]["answer"] = resp
+        #ss["debug"]["answer"] = combined_answer
         
         q = question.strip()
-        #a = resp["text"].strip()
-        a = combined_answer.strip()
+        a = resp["text"].strip()
+        #a = combined_answer.strip()
 
         output_add(q, a)
         st.rerun() # it is necessary to enable feedback buttons
@@ -222,6 +227,9 @@ def output_add(q, a):
 
 
 def ui_debug():
+    #Todo:
+    # re-fresh  functionality
+
     if ss.get("show_debug"):
         st.write("## Debug")
         st.write(ss.get("debug", {}))
