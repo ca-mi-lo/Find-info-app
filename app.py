@@ -34,13 +34,12 @@ if "filename_list_done" not in ss:
 
 def index_pdf_file():
 
-    #store = model.init_empty_chroma()
-    store = None
-
-    if ss["pdf_file_list"]:
+    if len(ss["pdf_file_list"])>0:
+        #st.write(len(ss["pdf_file_list"]))
 
         for pdf_file in ss["pdf_file_list"]:
             filename = pdf_file.name
+            #ss["pdf_file_list"]["filename"]
 
             if filename not in ss.get("filename_list_done"):
 
@@ -50,7 +49,6 @@ def index_pdf_file():
                         filename,
                         doc_size=ss["doc_size"],
                         doc_overlap=int(ss["doc_overlap"] * ss["doc_size"]),
-                        store = store # new param
                     )
                     
                     # Update session state with lists (assuming index is a list)
@@ -70,10 +68,10 @@ def index_pdf_file():
                     
         #--------------------------------------------------
     else:
+        print("RRRRRReset session states")
+        del ss["pdf_file_list"]
         ss.pop("index_list")
-        ss.pop("filename_list")
         ss["debug"].pop("index_list")
-        ss.pop("pdf_file_list")
         
         # TODO: What if  
         # t1. A.pdf + B.pdf are uploaded, 

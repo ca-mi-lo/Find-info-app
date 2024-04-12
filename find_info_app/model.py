@@ -16,7 +16,7 @@ from .prompts import documents_to_str
 #    return store
 
 def index_file(
-    f: IO[bytes], filename: str, doc_size: int = 250, doc_overlap: int = 0, store = None
+    f: IO[bytes], filename: str, doc_size: int = 250, doc_overlap: int = 0
 ) -> dict:
     h = hashlib.sha1(usedforsecurity = False)
     h.update(f.read())
