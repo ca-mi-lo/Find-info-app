@@ -10,10 +10,12 @@ from langchain_community.vectorstores import Chroma
 from .pdf import MyAppPDFLoader
 from . import ai
 from .prompts import documents_to_str
+import streamlit as st
 
-#def init_empty_chroma():
-#    store = Chroma.from_documents(documents embeddings=ai.get_embedding())
-#    return store
+ss = st.session_state
+
+
+
 
 def index_file(
     f: IO[bytes], filename: str, doc_size: int = 250, doc_overlap: int = 0
@@ -32,15 +34,15 @@ def index_file(
     t1 = now()
 
     embedding = ai.get_embedding()
-    # Extract content if data is a list of documents
-    if isinstance(data[0], langchain_core.documents.base.Document):
-        content_list = [doc for doc in data]
-    else:
-        # Handle other data types for 'data' (if applicable)
-        pass
+
+
+    pdf_filename_list = [pdf_file.name for pdf_file in ss.pdf_file_list]
+    drop_files =  list(set(ss["filename_list_done"]) - set(pdf_filename_list))
     
-    #store = Chroma.add_documents(data, embedding)
-    store = Chroma.from_documents(content_list, embedding)
+    if len(drop_files)>0:
+        store.delete_collection()
+
+    store = Chroma.from_documents(data, embedding)
 
     t2 = now()
     summary_tmpl = PromptTemplate.from_template(
@@ -61,6 +63,7 @@ def index_file(
         "store": store,
         "summary": summary,
         "filename": filename,
+        "metadata":data[0].metadata['source'],
         "file_hash": sha,
         "filesize": filesize,
         "model": ai.BASE_MODEL,  # TODO: fix this line
