@@ -12,8 +12,6 @@ from . import ai
 from .prompts import documents_to_str
 import streamlit as st
 
-ss = st.session_state
-global store
 store = Chroma()
 
 def delete_chroma(store: Chroma):   
@@ -36,8 +34,6 @@ def index_file(
     t1 = now()
 
     embedding = ai.get_embedding()
-
-    
     store = Chroma.from_documents(data, embedding)
 
     t2 = now()
@@ -62,7 +58,6 @@ def index_file(
         "metadata":data[0].metadata['source'],
         "file_hash": sha,
         "filesize": filesize,
-        "filename_list_done":ss["filename_list_done"],
         "model": ai.BASE_MODEL,  # TODO: fix this line
         "profiling": {"load_docs": t1 - t0, "embed_docs": t2 - t1, "summary": t3 - t2},
     }
