@@ -39,9 +39,14 @@ def index_pdf_file():
         pdf_filename_list = [pdf_file.name for pdf_file in ss.pdf_file_list]
         
         # New elements detected (elements nots contained in memory)
-        if set(pdf_filename_list) not in set(ss["filename_list_done"]):
-            new_files = list(set(pdf_filename_list) - set(ss["filename_list_done"]))
-
+        print("FLAG: pdf_filename_list", pdf_filename_list)
+        print("FLAG: filename_list_done", ss["filename_list_done"])
+        print("FLAG: is_new:", not set(pdf_filename_list).issubset(set(ss["filename_list_done"])))
+        if not set(pdf_filename_list) <= set(ss.get("filename_list_done", [])):
+        #set(pdf_filename_list) not in set(ss["filename_list_done"]):
+            #new_files = list(set(pdf_filename_list) - set(ss["filename_list_done"]))
+            new_files = [filename for filename in pdf_filename_list if filename not in set(ss.get("filename_list_done", []))]
+            print("FLAG: new_files", new_files)
             for pdf_file in ss["pdf_file_list"]: 
                 if pdf_file.name in new_files:
                     filename = pdf_file.name
@@ -66,9 +71,10 @@ def index_pdf_file():
                         ss["filename_list_done"].append(filename)  # 
         
         # list is smaller: some drops are in order
-        elif set(pdf_filename_list) in set(ss["filename_list_done"]):
+        elif set(pdf_filename_list).issubset(set(ss["filename_list_done"])):
             drop_files = list(set(ss["filename_list_done"]) - set(pdf_filename_list))
             #model.delete_chroma(drop_files,store)
+            print("FLAG: drop_files", drop_files)
             for filename in drop_files:
                 ss["filename_list_done"].remove(filename)
                 if filename in ss["index_list"]:
@@ -107,13 +113,17 @@ def debug_index():
             "file_hash": index["file_hash"],
             "n_docs": index["n_docs"],
             "summary": index["summary"],
-            "profiling": index["profiling"],
+            #"profiling": index["profiling"],
             "file_name": index["filename"], # new
-            "metadata": index["metadata"]
+            "metadata": index["metadata"],
+            "filename_list_done": index["filename_list_done"],
+            "filename_list": [pdf_file.name for pdf_file in ss.pdf_file_list]
+
         }
         debug_info.append(d)
 
     ss["debug"]["index_list"] = debug_info  # Store the list of debug info
+    
 
 
 def ui_spacer(n=2, line=False, next_n=0):
@@ -248,6 +258,7 @@ def ui_debug():
     if ss.get("show_debug"):
         st.write("## Debug")
         st.write(ss.get("debug", {}))
+        st.write({"filename_list_done":ss["filename_list_done"]})
 
 
 with st.sidebar:
