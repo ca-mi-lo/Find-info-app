@@ -13,7 +13,11 @@ from .prompts import documents_to_str
 import streamlit as st
 
 ss = st.session_state
+global store
+store = Chroma()
 
+def delete_chroma(store: Chroma):   
+    store.delete_collection()
 
 def index_file(
     f: IO[bytes], filename: str, doc_size: int = 250, doc_overlap: int = 0
@@ -33,13 +37,7 @@ def index_file(
 
     embedding = ai.get_embedding()
 
-
-    pdf_filename_list = [pdf_file.name for pdf_file in ss.pdf_file_list]
-    drop_files =  list(set(ss["filename_list_done"]) - set(pdf_filename_list))
     
-    if len(drop_files)>0:
-        store.delete_collection()
-
     store = Chroma.from_documents(data, embedding)
 
     t2 = now()

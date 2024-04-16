@@ -1,5 +1,6 @@
 import os
 import gettext
+import sys
 
 from find_info_app import ai, feedback
 
@@ -29,6 +30,7 @@ ss["embedding_model"] = ai.BASE_EMBEDDING_MODEL
 if "debug" not in ss:
     ss["debug"] = {}
 
+#store = None
 if "filename_list_done" not in ss:
     ss["filename_list_done"] = []
 
@@ -56,7 +58,7 @@ def index_pdf_file():
                             pdf_file,
                             filename,
                             doc_size=ss["doc_size"],
-                            doc_overlap=int(ss["doc_overlap"] * ss["doc_size"]),
+                            doc_overlap=int(ss["doc_overlap"] * ss["doc_size"])
                         )
                         # Update session state with lists (assuming index is a list)
                         if "index_list" not in ss:
@@ -73,8 +75,12 @@ def index_pdf_file():
         # list is smaller: some drops are in order
         elif set(pdf_filename_list).issubset(set(ss["filename_list_done"])):
             drop_files = list(set(ss["filename_list_done"]) - set(pdf_filename_list))
-            #model.delete_chroma(drop_files,store)
             print("FLAG: drop_files", drop_files)
+            #model.delete_chroma(index["store"])
+            
+            print("FLAG: YOU'VE BEEN TERMINATED!!!")
+            
+            
             for filename in drop_files:
                 ss["filename_list_done"].remove(filename)
                 if filename in ss["index_list"]:
@@ -92,8 +98,11 @@ def index_pdf_file():
         print("RRRRRReset session states")
         print("FLAG: ss['pdf_file_list']) == 0")
         del ss["pdf_file_list"]
+        del ss["filename_list_done"]
+        del ss["filename_list"]
         ss.pop("index_list")
         ss["debug"].pop("index_list")
+        model.delete_chroma(model.store)
         
         # TODO: What if  
         # t1. A.pdf + B.pdf are uploaded, 
