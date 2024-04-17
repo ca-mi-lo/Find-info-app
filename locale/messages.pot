@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-27 12:32-0600\n"
+"POT-Creation-Date: 2024-04-17 13:19-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,94 +17,94 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: app.py:37
+#: app.py:61
 msgid "indexing "
 msgstr ""
 
-#: app.py:79
+#: app.py:157
 msgid "## Upload or select your PDF file"
 msgstr ""
 
-#: app.py:80
+#: app.py:158
 msgid "UPLOAD"
 msgstr ""
 
-#: app.py:80
+#: app.py:158
 msgid "SELECT"
 msgstr ""
 
-#: app.py:83
+#: app.py:161
 msgid "pdf file"
 msgstr ""
 
-#: app.py:91
+#: app.py:170
 msgid "### Coming soon!"
 msgstr ""
 
-#: app.py:96
-msgid "## What are you looking for"
+#: app.py:183
+msgid "What are you looking for in:"
 msgstr ""
 
-#: app.py:104
+#: app.py:194
 msgid "Enter question here"
 msgstr ""
 
-#: app.py:116 app.py:123
+#: app.py:206 app.py:213
 msgid ":white_check_mark: Thanks!"
 msgstr ""
 
-#: app.py:118 app.py:125
+#: app.py:208 app.py:215
 msgid ":exclamation: Failed to send feedback"
 msgstr ""
 
-#: app.py:128
+#: app.py:218
 msgid "get answer"
 msgstr ""
 
-#: app.py:133
+#: app.py:226
 msgid "preparing answer"
 msgstr ""
 
-#: app.py:179
+#: app.py:272
 msgid "Choose you language"
 msgstr ""
 
-#: app.py:187
+#: app.py:280
 msgid "Advanced settings"
 msgstr ""
 
-#: app.py:188
+#: app.py:281
 msgid "**Indexing options**"
 msgstr ""
 
-#: app.py:190
+#: app.py:283
 msgid "Document size"
 msgstr ""
 
-#: app.py:197
+#: app.py:290
 msgid "Overlap ratio"
 msgstr ""
 
-#: app.py:204
+#: app.py:297
 msgid "**Answering options**"
 msgstr ""
 
-#: app.py:206
+#: app.py:299
 msgid "Temperature"
 msgstr ""
 
-#: app.py:216
+#: app.py:309
 msgid "No. of frag retrieved"
 msgstr ""
 
-#: app.py:225
+#: app.py:318
 msgid "Task"
 msgstr ""
 
-#: app.py:228
+#: app.py:321
 msgid "Base prompt used to generate the answer to the question"
 msgstr ""
 
-#: app.py:233
+#: app.py:326
 msgid "Google API Key was not provided"
 msgstr ""
