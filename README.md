@@ -57,7 +57,7 @@ to function properly.
 
 ## Development
 
-### Update tranlation files
+### Update translation files
 
 English is the default application language. Spanish is also available as an 
 option for application messages.
