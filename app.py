@@ -103,7 +103,6 @@ def index_pdf_file():
         del ss["filename_list"]
         ss.pop("index_list")
         ss["debug"].pop("index_list")
-        model.delete_chroma(model.store)
 
 def debug_index():
     indices = ss["index_list"]
