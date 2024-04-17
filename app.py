@@ -29,37 +29,98 @@ ss["embedding_model"] = ai.BASE_EMBEDDING_MODEL
 if "debug" not in ss:
     ss["debug"] = {}
 
+if "filename_list_done" not in ss:
+    ss["filename_list_done"] = []
 
 def index_pdf_file():
-    if ss["pdf_file"]:
-        ss["filename"] = ss["pdf_file"].name
-        if ss["filename"] != ss.get("filename_done"):
-            with st.spinner(_("indexing ") + ss["filename"]):
-                index = model.index_file(
-                    ss["pdf_file"],
-                    ss["filename"],
-                    doc_size=ss["doc_size"],
-                    doc_overlap=int(ss["doc_overlap"] * ss["doc_size"]),
-                )
-                ss["index"] = index
-                debug_index()
-                ss["filename_done"] = ss["filename"]
-    else:
-        ss.pop("index")
-        ss.pop("filename")
-        ss["debug"].pop("index")
 
+    if len(ss["pdf_file_list"])>0:
+        
+        pdf_filename_list = [pdf_file.name for pdf_file in ss.pdf_file_list]
+        
+        # New elements detected (elements nots contained in memory)
+        print("FLAG: pdf_filename_list", pdf_filename_list)
+        print("FLAG: filename_list_done", ss["filename_list_done"])
+        print("FLAG: is_new:", not set(pdf_filename_list).issubset(set(ss["filename_list_done"])))
+        if not set(pdf_filename_list) <= set(ss.get("filename_list_done", [])):
+            
+            new_files = [filename for filename in pdf_filename_list if filename not in set(ss.get("filename_list_done", []))]
+            print("FLAG: new_files", new_files)
+            for pdf_file in ss["pdf_file_list"]: 
+                if pdf_file.name in new_files:
+                    filename = pdf_file.name
+
+                    with st.spinner(_("indexing ") + filename):
+                        index = model.index_file(
+                            pdf_file,
+                            filename,
+                            doc_size=ss["doc_size"],
+                            doc_overlap=int(ss["doc_overlap"] * ss["doc_size"])
+                        )
+                        # Update session state with lists
+                        if "index_list" not in ss:
+                            ss["index_list"] = []
+                        
+                        ss["index_list"].append(index)
+
+                        if "filename_list" not in ss:
+                                ss["filename_list"] = []
+                        ss["filename_list"].append(filename)
+                        debug_index()
+                        ss["filename_list_done"].append(filename)  
+        
+        # list is smaller: some drops are in order
+        elif set(pdf_filename_list).issubset(set(ss["filename_list_done"])):
+            drop_files = list(set(ss["filename_list_done"]) - set(pdf_filename_list))
+            print("FLAG: drop_files", drop_files)
+            
+            for filename in drop_files:
+                ss["filename_list_done"].remove(filename)
+                if filename in ss["index_list"]:
+                    index_to_remove = ss["index_list"].index(filename)  # Find index of filename
+                    del ss["index_list"][index_to_remove]  # Remove entry from index_list
+                
+                if filename in ss["filename_list"]:
+                    filename_to_remove = ss["filename_list"].index(filename)  # Find index of filename
+                    del ss["filename_list"][filename_to_remove]  # Remove entry from filename_list
+            
+                # all docs where the pdf is filename
+                docs_to_delete = model.store.get(where={"source":filename})
+                
+                # Optional code: Debug & Print
+                metadata_list = docs_to_delete.get('metadatas')
+                sources_list = [metadata["source"] for metadata in metadata_list]
+                sources_list = list(set(sources_list))
+                print("FLAG: Files to delete", sources_list)
+            
+                #Delete docs from DB
+                model.store.delete(docs_to_delete["ids"])                      
+        #--------------------------------------------------
+    else:
+        print("FLAG: ss['pdf_file_list']) == 0")
+        del ss["pdf_file_list"]
+        del ss["filename_list_done"]
+        del ss["filename_list"]
+        ss.pop("index_list")
+        ss["debug"].pop("index_list")
+        model.delete_chroma(model.store)
 
 def debug_index():
-    index = ss["index"]
-    d = {
-        "file_hash": index["file_hash"],
-        "n_docs": index["n_docs"],
-        "summary": index["summary"],
-        "profiling": index["profiling"],
-    }
-    ss["debug"]["index"] = d
+    indices = ss["index_list"]
+    debug_info = []
 
+    for index in indices:
+        d = {
+            "file_hash": index["file_hash"],
+            "n_docs": index["n_docs"],
+            "summary": index["summary"],
+            "profiling": index["profiling"],
+            "file_name": index["filename"], # new
+
+        }
+        debug_info.append(d)
+
+    ss["debug"]["index_list"] = debug_info  # Store the list of debug info
 
 def ui_spacer(n=2, line=False, next_n=0):
     for _ in range(n):
@@ -73,7 +134,7 @@ def ui_spacer(n=2, line=False, next_n=0):
 def ui_show_debug():
     st.checkbox("show debug section", key="show_debug")
 
-
+# modified
 def ui_pdf_file():
     disabled = not os.getenv("GOOGLE_API_KEY")
     st.write(_("## Upload or select your PDF file"))
@@ -81,22 +142,33 @@ def ui_pdf_file():
     with t1:
         st.file_uploader(
             _("pdf file"),
-            type="pdf",
-            key="pdf_file",
-            label_visibility="collapsed",
-            on_change=index_pdf_file,
-            disabled=disabled,
+            type = "pdf",
+            key = "pdf_file_list", # new key name
+            accept_multiple_files = True, # New parameter
+            label_visibility = "collapsed",
+            on_change = index_pdf_file,
+            disabled = disabled,
         )
     with t2:
         st.write(_("### Coming soon!"))
 
 
 def ui_context():
+
+    filename_text = ""
+    if ss.get("filename_list", ""):
+        filename_text = ",  ".join(ss["filename_list"]) 
+    
+    elif ss.get("filename"):
+        filename_text = ss.filename
+
     st.write(
-        _("## What are you looking for")
-        + (f" in {ss.filename}" if ss.get("filename") else "")
+        _("What are you looking for in:")+"\n"
+        + (f"{filename_text} ?" if filename_text else "")
     )
-    disabled = not ss.get("index")
+    
+    disabled = not ss.get("index_list")
+
     st.text_area(
         "question",
         key="question",
@@ -107,9 +179,8 @@ def ui_context():
         disabled=disabled,
     )
 
-
 def b_ask():
-    disabled = not ss.get("index")
+    disabled = not ss.get("index_list")
     c1, c2, c3 = st.columns([2, 1, 1])
     if c2.button(":thumbsup:", use_container_width=True, disabled=not ss.get("output")):
         if feedback.send(1, ss):
@@ -129,7 +200,10 @@ def b_ask():
     ):
         question = ss.get("question", "")
         task = TASK[ss["task"]]
-        index: dict = ss.get("index", {})
+        
+        # (debugg-mode) hard code for dim=1. 
+        index = ss.get("index_list", [])[0] if ss.get("index_list") else {}
+        
         with st.spinner(_("preparing answer")):
             resp = model.query(
                 question,
@@ -139,8 +213,9 @@ def b_ask():
                 max_frags=ss["max_frags"],
             )
             ss["debug"]["executed_response"] = True
-
         ss["debug"]["answer"] = resp
+       
+        
         q = question.strip()
         a = resp["text"].strip()
 
@@ -164,7 +239,6 @@ def ui_debug():
     if ss.get("show_debug"):
         st.write("## Debug")
         st.write(ss.get("debug", {}))
-
 
 with st.sidebar:
     st.write(
