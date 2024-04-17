@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-17 13:19-0600\n"
+"POT-Creation-Date: 2024-04-17 17:05-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,69 +42,69 @@ msgid "### Coming soon!"
 msgstr ""
 
 #: app.py:183
-msgid "What are you looking for in:"
+msgid "## What are you looking for in:"
 msgstr ""
 
-#: app.py:194
+#: app.py:193
 msgid "Enter question here"
 msgstr ""
 
-#: app.py:206 app.py:213
+#: app.py:205 app.py:212
 msgid ":white_check_mark: Thanks!"
 msgstr ""
 
-#: app.py:208 app.py:215
+#: app.py:207 app.py:214
 msgid ":exclamation: Failed to send feedback"
 msgstr ""
 
-#: app.py:218
+#: app.py:217
 msgid "get answer"
 msgstr ""
 
-#: app.py:226
+#: app.py:225
 msgid "preparing answer"
 msgstr ""
 
-#: app.py:272
+#: app.py:271
 msgid "Choose you language"
 msgstr ""
 
-#: app.py:280
+#: app.py:279
 msgid "Advanced settings"
 msgstr ""
 
-#: app.py:281
+#: app.py:280
 msgid "**Indexing options**"
 msgstr ""
 
-#: app.py:283
+#: app.py:282
 msgid "Document size"
 msgstr ""
 
-#: app.py:290
+#: app.py:289
 msgid "Overlap ratio"
 msgstr ""
 
-#: app.py:297
+#: app.py:296
 msgid "**Answering options**"
 msgstr ""
 
-#: app.py:299
+#: app.py:298
 msgid "Temperature"
 msgstr ""
 
-#: app.py:309
+#: app.py:308
 msgid "No. of frag retrieved"
 msgstr ""
 
-#: app.py:318
+#: app.py:317
 msgid "Task"
 msgstr ""
 
-#: app.py:321
+#: app.py:320
 msgid "Base prompt used to generate the answer to the question"
 msgstr ""
 
-#: app.py:326
+#: app.py:325
 msgid "Google API Key was not provided"
 msgstr ""

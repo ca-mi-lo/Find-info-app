@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-17 13:19-0600\n"
+"POT-Creation-Date: 2024-04-17 17:05-0600\n"
 "PO-Revision-Date: 2024-02-27 10:44\n"
 "Last-Translator: Juan M Barrios <juan.barrios@conabio.gob.mx>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,71 +42,69 @@ msgid "### Coming soon!"
 msgstr "### ¡Próximamente!"
 
 #: app.py:183
-#, fuzzy
-msgid "What are you looking for in:"
+msgid "## What are you looking for in:"
 msgstr "## ¿Qué estás buscando en:"
 
-#: app.py:194
+#: app.py:193
 msgid "Enter question here"
 msgstr "Escribe tu pregunta aquí"
 
-#: app.py:206 app.py:213
+#: app.py:205 app.py:212
 msgid ":white_check_mark: Thanks!"
 msgstr ":white_check_mark: ¡Gracias!"
 
-#: app.py:208 app.py:215
+#: app.py:207 app.py:214
 msgid ":exclamation: Failed to send feedback"
 msgstr ":exclamation: Falló el envio de retroalimentación"
 
-#: app.py:218
+#: app.py:217
 msgid "get answer"
 msgstr "pregunta"
 
-#: app.py:226
+#: app.py:225
 msgid "preparing answer"
 msgstr "preparando la respuesta"
 
-#: app.py:272
+#: app.py:271
 msgid "Choose you language"
 msgstr "Selecciona tu idioma"
 
-#: app.py:280
+#: app.py:279
 msgid "Advanced settings"
 msgstr "Preferencias avanzadas"
 
-#: app.py:281
+#: app.py:280
 msgid "**Indexing options**"
 msgstr "**Opciones de indizado**"
 
-#: app.py:283
+#: app.py:282
 msgid "Document size"
 msgstr "Tamaño del fragmento"
 
-#: app.py:290
+#: app.py:289
 msgid "Overlap ratio"
 msgstr "Porcentaje de traslape"
 
-#: app.py:297
-#, fuzzy
+#: app.py:296
 msgid "**Answering options**"
 msgstr "**Opciones de respuesta**"
 
-#: app.py:299
+#: app.py:298
 msgid "Temperature"
 msgstr "Temperatura"
 
-#: app.py:309
+#: app.py:308
 msgid "No. of frag retrieved"
 msgstr "No. de fragmentos recuperados"
 
-#: app.py:318
+#: app.py:317
 msgid "Task"
 msgstr "Tarea"
 
-#: app.py:321
+#: app.py:320
 msgid "Base prompt used to generate the answer to the question"
 msgstr "Prompt base usado para generar la respuesta"
 
-#: app.py:326
+#: app.py:325
 msgid "Google API Key was not provided"
 msgstr "Llave del API de Google no proporcionada"

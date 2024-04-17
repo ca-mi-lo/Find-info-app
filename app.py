@@ -180,8 +180,7 @@ def ui_context():
         filename_text = ss.filename
 
     st.write(
-        _("What are you looking for in:")
-        + "\n"
+        _("## What are you looking for in:")
         + (f"{filename_text} ?" if filename_text else "")
     )
 
