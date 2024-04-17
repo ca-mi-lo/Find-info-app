@@ -10,12 +10,8 @@ from langchain_community.vectorstores import Chroma
 from .pdf import MyAppPDFLoader
 from . import ai
 from .prompts import documents_to_str
-import streamlit as st
 
 store = Chroma()
-
-def delete_chroma(store: Chroma):   
-    store.delete_collection()
 
 def index_file(
     f: IO[bytes], filename: str, doc_size: int = 250, doc_overlap: int = 0

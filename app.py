@@ -1,6 +1,5 @@
 import os
 import gettext
-import sys
 
 from find_info_app import ai, feedback
 
@@ -219,7 +218,6 @@ def b_ask():
         
         q = question.strip()
         a = resp["text"].strip()
-        
 
         output_add(q, a)
         st.rerun() # it is necessary to enable feedback buttons
@@ -238,12 +236,9 @@ def output_add(q, a):
 
 
 def ui_debug():
-    #ToDo: re-fresh  functionality
     if ss.get("show_debug"):
         st.write("## Debug")
         st.write(ss.get("debug", {}))
-        #st.write({"filename_list_done":ss["filename_list_done"]})
-
 
 with st.sidebar:
     st.write(
