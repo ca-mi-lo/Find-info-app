@@ -54,3 +54,27 @@ from [Google Developers Console](https://makersuite.google.com/app/apikey)
 and define it as an environmental variable (replace `your_api_key` with your 
 actual API key). This key is required for certain features of the application 
 to function properly.
+
+## Development
+
+### Update tranlation files
+
+English is the default application language. Spanish is also available as an 
+option for application messages.
+
+Messages for Spanish, or potentially new languages, are generated using
+[xgettext](https://www.gnu.org/software/gettext/) and its 
+[Python API](https://docs.python.org/3/library/gettext.html). Therefore, UI 
+translatable labels must be written as `_("Label text")`. 
+
+To update the pot translation template, execute the following command:
+
+```
+xgettext --output=locale/messages.pot app.py
+```
+
+Later, merge the new messages template with the previously translated file using:
+
+```
+msgmerge locale/es/LC_MESSAGES/messages.po locale/messages.pot -o locale/es/LC_MESSAGES/messages.po
+```
