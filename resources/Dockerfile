@@ -4,6 +4,9 @@ ENV POETRY_VERSION=1.7.1
 ARG UID=1000
 ARG GID=1000
 
+RUN apt-get update && apt-get install -y gettext \
+  && rm -rf /var/lib/apt/lists/*
+
 RUN pip install poetry
 
 WORKDIR /app
@@ -15,8 +18,10 @@ USER streamlit
 COPY ./pyproject.toml ./poetry.lock ./
 RUN poetry install --no-root --with elasticsearch --without dev
 
-COPY . .
-RUN poetry install --no-dev
+COPY --chown=${UID}:${GID} . .
+# RUN poetry install --no-dev
+
+RUN msgfmt -o /app/locale/es/LC_MESSAGES/messages.mo /app/locale/es/LC_MESSAGES/messages.po
 
 EXPOSE 8501
 
