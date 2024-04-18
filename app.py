@@ -181,6 +181,7 @@ def ui_context():
 
     st.write(
         _("## What are you looking for in:")
+        + "\n"
         + (f"{filename_text} ?" if filename_text else "")
     )
 
