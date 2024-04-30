@@ -11,7 +11,7 @@ from .pdf import MyAppPDFLoader
 from . import ai
 from .prompts import documents_to_str
 
-store = Chroma()
+#store = Chroma()
 
 
 def index_file(
@@ -31,7 +31,7 @@ def index_file(
     t1 = now()
 
     embedding = ai.get_embedding()
-    store = Chroma.from_documents(data, embedding)
+    store = Chroma.from_documents(data, embedding) # optional param: , collection_metadata = {"hnsw:space": "cosine"}
 
     t2 = now()
     summary_tmpl = PromptTemplate.from_template(
@@ -52,7 +52,7 @@ def index_file(
         "store": store,
         "summary": summary,
         "filename": filename,
-        "metadata": data[0].metadata["source"],
+        "metadata": data[0].metadata,
         "file_hash": sha,
         "filesize": filesize,
         "model": ai.BASE_MODEL,  # TODO: fix this line
@@ -73,9 +73,15 @@ def query(
 
     t0 = now()
     query_vector = embedding.embed_query(text)
+    
+    # Elige método para top5
     selected_docs = db.max_marginal_relevance_search_by_vector(
         embedding=query_vector, k=max_frags, lambda_mult=0.2
     )
+    selected_docs_stand_by = db.similarity_search_by_vector(
+        embedding=query_vector, k=max_frags
+    )
+    selected_docs_raw = selected_docs
     selected_docs = documents_to_str(selected_docs)
     t1 = now()
     context_len = ai.get_token_count(selected_docs)
@@ -95,6 +101,8 @@ def query(
     t3 = now()
 
     out = {
+        "selected_docs": selected_docs,
+        "selected_docs_raw": selected_docs_raw,
         "msg": msg,
         "text": resp,
         "context_lenght": context_len,

@@ -119,6 +119,7 @@ def index_pdf_file():
         del ss["filename_list"]
         ss.pop("index_list")
         ss["debug"].pop("index_list")
+        del ss["debug"]
 
 
 def debug_index():
@@ -151,12 +152,13 @@ def ui_show_debug():
     st.checkbox("show debug section", key="show_debug")
 
 
-# modified
 def ui_pdf_file():
     disabled = not os.getenv("GOOGLE_API_KEY")
     st.write(_("## Upload or select your PDF file"))
     t1, t2 = st.tabs([_("UPLOAD"), _("SELECT")])
+    print('FLAG: ss["debug"].keys()', ss["debug"].keys())
     with t1:
+        
         st.file_uploader(
             _("pdf file"),
             type="pdf",
@@ -166,6 +168,17 @@ def ui_pdf_file():
             on_change=index_pdf_file,
             disabled=disabled,
         )
+        ######################################################################################
+        if 'answer' in ss["debug"].keys():
+            st.write(_("#### Top 5 Docs are:"))
+            for i,doc in enumerate(ss["debug"].get("answer","").get("selected_docs_raw","")):
+                st.write(
+                    ("TOP "+str(i+1)+":"),
+                    doc.metadata,
+                    doc.page_content
+        )
+        ######################################################################################
+        
     with t2:
         st.write(_("### Coming soon!"))
 
@@ -180,7 +193,7 @@ def ui_context():
         filename_text = ss.filename
 
     st.write(
-        _("## What are you looking for in:")
+        _("### What are you looking for in:")
         + "\n"
         + (f"{filename_text} ?" if filename_text else "")
     )
@@ -236,6 +249,7 @@ def b_ask():
 
         q = question.strip()
         a = resp["text"].strip()
+        #ss["resp"] = resp  #new
 
         output_add(q, a)
         st.rerun()  # it is necessary to enable feedback buttons
@@ -250,12 +264,12 @@ def output_add(q, a):
     if "output" not in ss:
         ss["output"] = ""
     new_resp = f"### {q}\n{a}\n\n"
-    ss["output"] = new_resp + ss["output"]
+    ss["output"] = new_resp #+ ss["output"]  # Dejemos sólo la última respuesta para compararla vs. retrival chunks
 
 
 def ui_debug():
     if ss.get("show_debug"):
-        st.write("## Debug")
+        st.write("### Debug")
         st.write(ss.get("debug", {}))
 
 
