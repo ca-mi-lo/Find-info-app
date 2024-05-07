@@ -117,7 +117,6 @@ def ui_pdf_file():
     t1, t2 = st.tabs([_("UPLOAD"), _("SELECT")])
     print('FLAG: ss["debug"].keys()', ss["debug"].keys())
     with t1:
-
         st.file_uploader(
             _("pdf file"),
             type="pdf",
@@ -133,7 +132,12 @@ def ui_pdf_file():
             for i, doc in enumerate(
                 ss["debug"].get("answer", "").get("selected_docs_raw", "")
             ):
-                st.write(("TOP " + str(i + 1) + ":"), doc.metadata, doc.page_content)
+                st.markdown("*Streamlit* is **really** ***cool***.")
+                st.markdown("TOP " + str(i + 1) + ":\n")
+                st.markdown("page: " + str(doc.metadata["page"]+1) +"; ")
+                st.markdown("source:\n _" + doc.metadata["source"]+"_")
+                st.markdown(doc.page_content)
+
         ######################################################################################
 
     with t2:
