@@ -26,7 +26,8 @@ else:
     feedback = feedback.BaseFeedback()
 
 st.set_page_config(
-    layout="centered",
+    layout="wide",
+    initial_sidebar_state="collapsed",
     page_title=f"{find_info_app.__app_name__} {find_info_app.__version__}",
 )
 
@@ -131,10 +132,13 @@ def ui_pdf_file():
         if "answer" in ss["debug"].keys():
             st.write(_("#### Top 5 Docs are:"))
             for i, doc in enumerate(
-                ss["debug"].get("answer", "").get("selected_docs_raw", "")
+                ss["debug"].get("answer", "" ).get("selected_docs_raw", "")
             ):
-                st.write(("TOP " + str(i + 1) + ":"), doc.metadata, doc.page_content)
-        ######################################################################################
+                st.markdown("TOP " + str(i + 1) + ":\n")
+                st.markdown("**Página:** " + str(doc.metadata["page"]+1)+";   " \
+                            + "&nbsp;&nbsp;&nbsp;"  + "**File:** _" + doc.metadata["source"]+"_")
+                st.markdown(doc.page_content)
+
 
     with t2:
         st.write(_("### Coming soon!"))
