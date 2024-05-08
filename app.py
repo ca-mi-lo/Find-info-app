@@ -302,9 +302,11 @@ with st.sidebar:
 if not os.getenv("GOOGLE_API_KEY"):
     st.error(_("Google API Key was not provided"), icon="🚨")
 
+
+ui_output()
 ui_pdf_file()
 ui_context()
 b_ask()
-ui_output()
+
 ui_show_debug()
 ui_debug()
