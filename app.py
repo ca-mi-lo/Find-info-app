@@ -46,6 +46,15 @@ if "logger" not in ss:
 
 logger: logging.Logger = ss["logger"]
 
+if not "pdf_file_list" in ss:
+    # Chicano fix para vaciado de bd
+    logger.debug("Clean db")
+    logger.debug(list(ss.keys()))
+    store = model.init_db(ss["embedding_model"])
+
+    all_docs = store.get()
+    store.delete(all_docs["ids"])
+    logger.debug(f"removed docs: {len(all_docs['ids'])}")
 
 def index_pdf_file():
     if "store" not in ss:
@@ -116,7 +125,6 @@ def ui_pdf_file():
     disabled = not os.getenv("GOOGLE_API_KEY")
     st.write(_("## Upload or select your PDF file"))
     t1, t2 = st.tabs([_("UPLOAD"), _("SELECT")])
-    print('FLAG: ss["debug"].keys()', ss["debug"].keys())
     with t1:
 
         st.file_uploader(
@@ -128,17 +136,6 @@ def ui_pdf_file():
             on_change=index_pdf_file,
             disabled=disabled,
         )
-        ######################################################################################
-        if "answer" in ss["debug"].keys():
-            st.write(_("#### Top 5 Docs are:"))
-            for i, doc in enumerate(
-                ss["debug"].get("answer", "" ).get("selected_docs_raw", "")
-            ):
-                st.markdown("TOP " + str(i + 1) + ":\n")
-                st.markdown("**Página:** " + str(doc.metadata["page"]+1)+";   " \
-                            + "&nbsp;&nbsp;&nbsp;"  + "**File:** _" + doc.metadata["source"]+"_")
-                st.markdown(doc.page_content)
-
 
     with t2:
         st.write(_("### Coming soon!"))
@@ -212,23 +209,21 @@ def b_ask():
         a = resp["text"].strip()
         # ss["resp"] = resp  #new
 
-        output_add(q, a)
+        # output_add(q, a)
         st.rerun()  # it is necessary to enable feedback buttons
 
 
 def ui_output():
-    output = ss.get("output", "")
-    st.write(output)
-
-
-def output_add(q, a):
-    if "output" not in ss:
-        ss["output"] = ""
-    new_resp = f"### {q}\n{a}\n\n"
-    ss["output"] = (
-        new_resp  # + ss["output"]  # Dejemos sólo la última respuesta para compararla vs. retrival chunks
-    )
-
+    if "answer" in ss["debug"].keys():
+        st.write(_("### May be you can find your answer in the following excerpts:"))
+        for i, doc in enumerate(
+                ss["debug"].get("answer", "" ).get("selected_docs_raw", "")
+                ):
+            # st.markdown("TOP " + str(i + 1) + ":\n")
+            st.markdown(_("**Page:** ") + str(doc.metadata["page"]+1)+";" \
+                        + 5*"&nbsp;" + "**File:** _" + doc.metadata["source"]+"_")
+            st.markdown(doc.page_content)
+            st.divider()
 
 def ui_debug():
     if ss.get("show_debug"):
@@ -303,10 +298,9 @@ if not os.getenv("GOOGLE_API_KEY"):
     st.error(_("Google API Key was not provided"), icon="🚨")
 
 
-ui_output()
 ui_pdf_file()
 ui_context()
 b_ask()
-
+ui_output()
 ui_show_debug()
 ui_debug()
