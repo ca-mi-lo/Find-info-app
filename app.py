@@ -53,6 +53,7 @@ if not "pdf_file_list" in ss:
     store = model.init_db(ss["embedding_model"])
 
     all_docs = store.get()
+    #store.delete(all_docs["ids"])
     store.delete_collection()
     logger.debug(f"removed docs: {len(all_docs['ids'])}")
 
