@@ -7,7 +7,9 @@ BASE_MODEL = AVAILABLE_MODELS[0]
 BASE_EMBEDDING_MODEL = AVAILABLE_EMBEDDINGS[0]
 
 
-def get_embedding(model: str = BASE_EMBEDDING_MODEL, task_type: str="retrieval_document"):
+def get_embedding(
+    model: str = BASE_EMBEDDING_MODEL, task_type: str = "retrieval_document"
+):
     return GoogleGenerativeAIEmbeddings(model=model, task_type=task_type)
 
 
