@@ -53,6 +53,7 @@ if not "pdf_file_list" in ss:
     store = model.init_db(ss["embedding_model"])
 
     all_docs = store.get()
+    #store.delete(all_docs["ids"])
     store.delete_collection()
     logger.debug(f"removed docs: {len(all_docs['ids'])}")
 
@@ -207,15 +208,32 @@ def b_ask():
 
         q = question.strip()
         a = resp["text"].strip()
-        # ss["resp"] = resp  #new
+        ss["resp"] = resp  #new
 
-        # output_add(q, a)
+        output_add(q, a)
         st.rerun()  # it is necessary to enable feedback buttons
 
 
+def output_add(q, a):
+    if "output" not in ss:
+        ss["output"] = ""
+    new_resp = f"### {q}\n{a}\n\n"
+    ss["output"] = (
+        new_resp  # + ss["output"]  # Dejemos sólo la última respuesta para compararla vs. retrival chunks
+    )
+
+
+
 def ui_output():
+    if "output" not in ss:
+        ss["output"] = ""
+    else: 
+        ss["output"]
+    
+    st.divider()
+
     if "answer" in ss["debug"].keys():
-        st.write(_("### May be you can find your answer in the following excerpts:"))
+        st.write(_("### You may find your answer in the following excerpts:"))
         for i, doc in enumerate(
                 ss["debug"].get("answer", "" ).get("selected_docs_raw", "")
                 ):
