@@ -52,10 +52,8 @@ if not "pdf_file_list" in ss:
     logger.debug(list(ss.keys()))
     store = model.init_db(ss["embedding_model"])
 
-    all_docs = store.get()
-    #store.delete(all_docs["ids"])
     store.delete_collection()
-    logger.debug(f"removed docs: {len(all_docs['ids'])}")
+
 
 def index_pdf_file():
     if "store" not in ss:
@@ -208,7 +206,7 @@ def b_ask():
 
         q = question.strip()
         a = resp["text"].strip()
-        ss["resp"] = resp  #new
+        ss["resp"] = resp  # new
 
         output_add(q, a)
         st.rerun()  # it is necessary to enable feedback buttons
@@ -223,25 +221,32 @@ def output_add(q, a):
     )
 
 
-
 def ui_output():
     if "output" not in ss:
         ss["output"] = ""
-    else: 
+    else:
         ss["output"]
-    
+
     st.divider()
 
     if "answer" in ss["debug"].keys():
         st.write(_("### You may find your answer in the following excerpts:"))
         for i, doc in enumerate(
-                ss["debug"].get("answer", "" ).get("selected_docs_raw", "")
-                ):
+            ss["debug"].get("answer", "").get("selected_docs_raw", "")
+        ):
             # st.markdown("TOP " + str(i + 1) + ":\n")
-            st.markdown(_("**Page:** ") + str(doc.metadata["page"]+1)+";" \
-                        + 5*"&nbsp;" + _("**File:** _") + doc.metadata["source"]+"_")
+            st.markdown(
+                _("**Page:** ")
+                + str(doc.metadata["page"] + 1)
+                + ";"
+                + 5 * "&nbsp;"
+                + _("**File:** _")
+                + doc.metadata["source"]
+                + "_"
+            )
             st.markdown(doc.page_content)
             st.divider()
+
 
 def ui_debug():
     if ss.get("show_debug"):
