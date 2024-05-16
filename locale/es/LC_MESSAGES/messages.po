@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-17 17:05-0600\n"
+"POT-Creation-Date: 2024-05-15 11:12-0600\n"
 "PO-Revision-Date: 2024-02-27 10:44\n"
 "Last-Translator: Juan M Barrios <juan.barrios@conabio.gob.mx>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,94 +17,108 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: app.py:61
+#: app.py:68
 msgid "indexing "
 msgstr "indizando "
 
-#: app.py:157
+#: app.py:125
 msgid "## Upload or select your PDF file"
 msgstr "## Carga o selecciona un archivo PDF"
 
-#: app.py:158
+#: app.py:126
 msgid "UPLOAD"
 msgstr "CARGA"
 
-#: app.py:158
+#: app.py:126
 msgid "SELECT"
 msgstr "SELECCIONA"
 
-#: app.py:161
+#: app.py:130
 msgid "pdf file"
 msgstr "archivo pdf"
 
-#: app.py:170
+#: app.py:140
 msgid "### Coming soon!"
 msgstr "### ¡Próximamente!"
 
-#: app.py:183
-msgid "## What are you looking for in:"
+#: app.py:153
+#, fuzzy
+msgid "### What are you looking for in:"
 msgstr "## ¿Qué estás buscando en:"
 
-#: app.py:193
+#: app.py:164
 msgid "Enter question here"
 msgstr "Escribe tu pregunta aquí"
 
-#: app.py:205 app.py:212
+#: app.py:176 app.py:183
 msgid ":white_check_mark: Thanks!"
 msgstr ":white_check_mark: ¡Gracias!"
 
-#: app.py:207 app.py:214
+#: app.py:178 app.py:185
 msgid ":exclamation: Failed to send feedback"
 msgstr ":exclamation: Falló el envio de retroalimentación"
 
-#: app.py:217
+#: app.py:188
 msgid "get answer"
 msgstr "pregunta"
 
-#: app.py:225
+#: app.py:196
 msgid "preparing answer"
 msgstr "preparando la respuesta"
 
-#: app.py:271
+#: app.py:233
+#, fuzzy
+msgid "### You may find your answer in the following excerpts:"
+msgstr "### Tal vez puedas encontrar tu respuesta en los siguientes extractos:"
+
+#: app.py:239
+msgid "**Page:** "
+msgstr "**Página:** "
+
+#: app.py:243
+msgid "**File:** _"
+msgstr "**Archivo:** _"
+
+#: app.py:267
 msgid "Choose you language"
 msgstr "Selecciona tu idioma"
 
-#: app.py:279
+#: app.py:275
 msgid "Advanced settings"
 msgstr "Preferencias avanzadas"
 
-#: app.py:280
+#: app.py:276
 msgid "**Indexing options**"
 msgstr "**Opciones de indizado**"
 
-#: app.py:282
+#: app.py:278
 msgid "Document size"
 msgstr "Tamaño del fragmento"
 
-#: app.py:289
+#: app.py:285
 msgid "Overlap ratio"
 msgstr "Porcentaje de traslape"
 
-#: app.py:296
+#: app.py:292
 msgid "**Answering options**"
 msgstr "**Opciones de respuesta**"
 
-#: app.py:298
+#: app.py:294
 msgid "Temperature"
 msgstr "Temperatura"
 
-#: app.py:308
+#: app.py:304
 msgid "No. of frag retrieved"
 msgstr "No. de fragmentos recuperados"
 
-#: app.py:317
+#: app.py:313
 msgid "Task"
 msgstr "Tarea"
 
-#: app.py:320
+#: app.py:316
 msgid "Base prompt used to generate the answer to the question"
 msgstr "Prompt base usado para generar la respuesta"
 
-#: app.py:325
+#: app.py:321
 msgid "Google API Key was not provided"
 msgstr "Llave del API de Google no proporcionada"

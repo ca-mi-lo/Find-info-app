@@ -26,7 +26,8 @@ else:
     feedback = feedback.BaseFeedback()
 
 st.set_page_config(
-    layout="centered",
+    layout="wide",
+    initial_sidebar_state="collapsed",
     page_title=f"{find_info_app.__app_name__} {find_info_app.__version__}",
 )
 
@@ -44,6 +45,14 @@ if "logger" not in ss:
     ss["logger"] = find_info_app.create_logger(levelname="DEBUG")
 
 logger: logging.Logger = ss["logger"]
+
+if not "pdf_file_list" in ss:
+    # Chicano fix para vaciado de bd
+    logger.debug("Clean db")
+    logger.debug(list(ss.keys()))
+    store = model.init_db(ss["embedding_model"])
+
+    store.delete_collection()
 
 
 def index_pdf_file():
@@ -115,7 +124,6 @@ def ui_pdf_file():
     disabled = not os.getenv("GOOGLE_API_KEY")
     st.write(_("## Upload or select your PDF file"))
     t1, t2 = st.tabs([_("UPLOAD"), _("SELECT")])
-    print('FLAG: ss["debug"].keys()', ss["debug"].keys())
     with t1:
 
         st.file_uploader(
@@ -127,14 +135,6 @@ def ui_pdf_file():
             on_change=index_pdf_file,
             disabled=disabled,
         )
-        ######################################################################################
-        if "answer" in ss["debug"].keys():
-            st.write(_("#### Top 5 Docs are:"))
-            for i, doc in enumerate(
-                ss["debug"].get("answer", "").get("selected_docs_raw", "")
-            ):
-                st.write(("TOP " + str(i + 1) + ":"), doc.metadata, doc.page_content)
-        ######################################################################################
 
     with t2:
         st.write(_("### Coming soon!"))
@@ -206,15 +206,10 @@ def b_ask():
 
         q = question.strip()
         a = resp["text"].strip()
-        # ss["resp"] = resp  #new
+        ss["resp"] = resp  # new
 
         output_add(q, a)
         st.rerun()  # it is necessary to enable feedback buttons
-
-
-def ui_output():
-    output = ss.get("output", "")
-    st.write(output)
 
 
 def output_add(q, a):
@@ -224,6 +219,33 @@ def output_add(q, a):
     ss["output"] = (
         new_resp  # + ss["output"]  # Dejemos sólo la última respuesta para compararla vs. retrival chunks
     )
+
+
+def ui_output():
+    if "output" not in ss:
+        ss["output"] = ""
+    else:
+        ss["output"]
+
+    st.divider()
+
+    if "answer" in ss["debug"].keys():
+        st.write(_("### You may find your answer in the following excerpts:"))
+        for i, doc in enumerate(
+            ss["debug"].get("answer", "").get("selected_docs_raw", "")
+        ):
+            # st.markdown("TOP " + str(i + 1) + ":\n")
+            st.markdown(
+                _("**Page:** ")
+                + str(doc.metadata["page"] + 1)
+                + ";"
+                + 5 * "&nbsp;"
+                + _("**File:** _")
+                + doc.metadata["source"]
+                + "_"
+            )
+            st.markdown(doc.page_content)
+            st.divider()
 
 
 def ui_debug():
@@ -297,6 +319,7 @@ with st.sidebar:
 
 if not os.getenv("GOOGLE_API_KEY"):
     st.error(_("Google API Key was not provided"), icon="🚨")
+
 
 ui_pdf_file()
 ui_context()
