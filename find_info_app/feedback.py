@@ -23,9 +23,10 @@ class BaseFeedback:
 
     def _build_feedback_doc(self, sessionInfo: SessionStateProxy) -> Tuple[str, dict]:
         feedback_doc = {
-            "answer": sessionInfo.debug.get("answer"),
+            "answer": sessionInfo.debug.get("answer").get("text"),
+            "docs": sessionInfo.debug.get("answer").get("selected_docs"),
             "doc_size": sessionInfo.get("doc_size"),
-            "filehash": sessionInfo.index.get("file_hash"),
+            # "filehash": sessionInfo.index.get("file_hash"),
             "k_docs": sessionInfo.get("max_frags"),
             "model": sessionInfo.get("model"),
             "embedding_model": sessionInfo.get("embedding_model"),
@@ -39,6 +40,9 @@ class BaseFeedback:
         return hash, feedback_doc
 
     def send(self, score: int, sessionInfo: SessionStateProxy) -> bool:
+        logger = sessionInfo["logger"]
+        feedback_doc = self._build_feedback_doc(sessionInfo)
+        logger.debug(feedback_doc)
         return True
 
 

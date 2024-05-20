@@ -84,13 +84,13 @@ def query(
     selected_docs = db.max_marginal_relevance_search_by_vector(
         embedding=query_vector, k=max_frags, lambda_mult=0.2
     )
-    selected_docs_stand_by = db.similarity_search_by_vector(
-        embedding=query_vector, k=max_frags
-    )
-    selected_docs_raw = selected_docs
-    selected_docs = documents_to_str(selected_docs)
+    # selected_docs_stand_by = db.similarity_search_by_vector(
+    #     embedding=query_vector, k=max_frags
+    # )
+    # selected_docs = selected_docs
+    selected_docs_str = documents_to_str(selected_docs)
     t1 = now()
-    context_len = ai.get_token_count(selected_docs)
+    context_len = ai.get_token_count(selected_docs_str)
 
     prompt = PromptTemplate.from_template(
         """{task}
@@ -100,15 +100,15 @@ def query(
     """
     )
 
-    msg = prompt.format(task=task, selected_docs=selected_docs, question=text)
+    msg = prompt.format(task=task, selected_docs=selected_docs_str, question=text)
 
     t2 = now()
     resp = ai.complete(msg, temperature)
     t3 = now()
 
     out = {
+        "selected_docs_str": selected_docs_str,
         "selected_docs": selected_docs,
-        "selected_docs_raw": selected_docs_raw,
         "msg": msg,
         "text": resp,
         "context_lenght": context_len,

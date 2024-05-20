@@ -2,8 +2,6 @@ import logging
 import os
 import gettext
 
-from streamlit import logger
-
 from find_info_app import ai, feedback
 
 _ = gettext.gettext
@@ -232,7 +230,7 @@ def ui_output():
     if "answer" in ss["debug"].keys():
         st.write(_("### You may find your answer in the following excerpts:"))
         for i, doc in enumerate(
-            ss["debug"].get("answer", "").get("selected_docs_raw", "")
+            ss["debug"].get("answer", "").get("selected_docs", "")
         ):
             # st.markdown("TOP " + str(i + 1) + ":\n")
             st.markdown(
