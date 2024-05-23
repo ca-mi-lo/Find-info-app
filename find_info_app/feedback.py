@@ -1,6 +1,8 @@
 import pickle
 from hashlib import sha1
-from typing import Tuple
+from typing import Tuple, Union
+
+from langchain_core.documents import Document
 from streamlit.runtime.state import SessionStateProxy
 
 try:
@@ -10,6 +12,7 @@ try:
 except ImportError:
     is_elasticsearch_available = False
 
+MessageType = Union[Document, SessionStateProxy]
 
 def dict_to_sha1(d: dict) -> str:
     pickled_dict = pickle.dumps(d)
@@ -39,10 +42,18 @@ class BaseFeedback:
 
         return hash, feedback_doc
 
-    def send(self, score: int, sessionInfo: SessionStateProxy) -> bool:
-        logger = sessionInfo["logger"]
-        feedback_doc = self._build_feedback_doc(sessionInfo)
-        logger.debug(feedback_doc)
+    def _get_serialized_message(self, msg: MessageType) -> Tuple[str, dict]:
+        if isinstance(msg, SessionStateProxy):
+            return self._build_feedback_doc(msg)
+        if isinstance(msg, Document):
+            doc_dict = msg.dict()
+            hash = dict_to_sha1(doc_dict)
+
+            return hash, doc_dict
+        else:
+            raise TypeError(f"Unsupported message class: {type(msg)}")
+
+    def send(self, score: int, msg: MessageType) -> bool:
         return True
 
 
@@ -54,8 +65,8 @@ class ESFeedback(BaseFeedback):
         self.es = Elasticsearch(hosts=[conn_str], max_retries=5)
         self.index = index
 
-    def send(self, score: int, sessionInfo: SessionStateProxy) -> bool:
-        id, feedback_doc = self._build_feedback_doc(sessionInfo)
+    def send(self, score: int, msg: Union[Document, SessionStateProxy]) -> bool:
+        id, feedback_doc = self._get_serialized_message(msg)
         feedback_doc.update({"score": score})
         try:
             resp = self.es.index(index=self.index, id=id, body=feedback_doc)
