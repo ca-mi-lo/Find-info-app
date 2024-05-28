@@ -20,7 +20,7 @@ else:
 
 
 def display_docs(docs: Iterable[Document]):
-    for doc in docs:
+    for idx, doc in enumerate(docs):
         st.markdown(
                 _("**Page:** ")
                 + str(doc.metadata["page"] + 1)
@@ -33,13 +33,13 @@ def display_docs(docs: Iterable[Document]):
         st.markdown(doc.page_content)
         b1, b2 = st.columns(2)
 
-        if b1.button(":thumbsup:", use_container_width=True):
+        if b1.button(":thumbsup:", use_container_width=True, key=f"feedback_up_{idx}"):
             if feedback.send(1, doc):
                 st.toast(_(":white_check_mark: Thanks!"))
             else:
                 st.toast(_(":exclamation: Failed to send feedback"))
         if b2.button(
-                ":thumbsdown:", use_container_width=True
+                ":thumbsdown:", use_container_width=True, key=f"feedback_down_{idx}"
                 ):
             if feedback.send(-1, doc):
                 st.toast(_(":white_check_mark: Thanks!"))
