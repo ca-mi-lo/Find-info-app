@@ -230,22 +230,9 @@ def ui_output():
 
     if "answer" in ss["debug"].keys():
         st.write(_("### You may find your answer in the following excerpts:"))
-        display_docs(ss["debug"].get("answer", "").get("selected_docs", ""))
-        # for i, doc in enumerate(
-        #     ss["debug"].get("answer", "").get("selected_docs", "")
-        # ):
-        #     # st.markdown("TOP " + str(i + 1) + ":\n")
-        #     st.markdown(
-        #         _("**Page:** ")
-        #         + str(doc.metadata["page"] + 1)
-        #         + ";"
-        #         + 5 * "&nbsp;"
-        #         + _("**File:** _")
-        #         + doc.metadata["source"]
-        #         + "_"
-        #     )
-        #     st.markdown(doc.page_content)
-        #     st.divider()
+        display_docs(
+            ss["debug"].get("answer", "").get("selected_docs", ""), ss.get("question")
+        )
 
 
 def ui_debug():
