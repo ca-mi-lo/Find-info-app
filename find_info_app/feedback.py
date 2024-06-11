@@ -1,6 +1,8 @@
 import pickle
 from hashlib import sha1
-from typing import Tuple
+from typing import Tuple, Union
+
+from langchain_core.documents import Document
 from streamlit.runtime.state import SessionStateProxy
 
 try:
@@ -10,6 +12,7 @@ try:
 except ImportError:
     is_elasticsearch_available = False
 
+MessageType = Union[Document, SessionStateProxy]
 
 def dict_to_sha1(d: dict) -> str:
     pickled_dict = pickle.dumps(d)
@@ -23,9 +26,10 @@ class BaseFeedback:
 
     def _build_feedback_doc(self, sessionInfo: SessionStateProxy) -> Tuple[str, dict]:
         feedback_doc = {
-            "answer": sessionInfo.debug.get("answer"),
+            "answer": sessionInfo.debug.get("answer").get("text"),
+            "docs": sessionInfo.debug.get("answer").get("selected_docs"),
             "doc_size": sessionInfo.get("doc_size"),
-            "filehash": sessionInfo.index.get("file_hash"),
+            # "filehash": sessionInfo.index.get("file_hash"),
             "k_docs": sessionInfo.get("max_frags"),
             "model": sessionInfo.get("model"),
             "embedding_model": sessionInfo.get("embedding_model"),
@@ -38,7 +42,18 @@ class BaseFeedback:
 
         return hash, feedback_doc
 
-    def send(self, score: int, sessionInfo: SessionStateProxy) -> bool:
+    def _get_serialized_message(self, msg: MessageType) -> Tuple[str, dict]:
+        if isinstance(msg, SessionStateProxy):
+            return self._build_feedback_doc(msg)
+        if isinstance(msg, Document):
+            doc_dict = msg.dict()
+            hash = dict_to_sha1(doc_dict)
+
+            return hash, doc_dict
+        else:
+            raise TypeError(f"Unsupported message class: {type(msg)}")
+
+    def send(self, score: int, msg: MessageType) -> bool:
         return True
 
 
@@ -50,8 +65,8 @@ class ESFeedback(BaseFeedback):
         self.es = Elasticsearch(hosts=[conn_str], max_retries=5)
         self.index = index
 
-    def send(self, score: int, sessionInfo: SessionStateProxy) -> bool:
-        id, feedback_doc = self._build_feedback_doc(sessionInfo)
+    def send(self, score: int, msg: Union[Document, SessionStateProxy]) -> bool:
+        id, feedback_doc = self._get_serialized_message(msg)
         feedback_doc.update({"score": score})
         try:
             resp = self.es.index(index=self.index, id=id, body=feedback_doc)

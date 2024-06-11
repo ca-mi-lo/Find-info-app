@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "find-info-app"
-version = "0.1.2"
+version = "0.1.3"
 description = "Streamlit app to extract info from articles using Gemini Pro LLM"
 authors = ["Juan M Barrios <juan.barrios@conabio.gob.mx>"]
 license = "GPL-v3"

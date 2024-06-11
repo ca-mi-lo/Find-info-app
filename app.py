@@ -2,9 +2,8 @@ import logging
 import os
 import gettext
 
-from streamlit import logger
-
 from find_info_app import ai, feedback
+from find_info_app.ui.display_docs import display_docs
 
 _ = gettext.gettext
 
@@ -231,21 +230,9 @@ def ui_output():
 
     if "answer" in ss["debug"].keys():
         st.write(_("### You may find your answer in the following excerpts:"))
-        for i, doc in enumerate(
-            ss["debug"].get("answer", "").get("selected_docs_raw", "")
-        ):
-            # st.markdown("TOP " + str(i + 1) + ":\n")
-            st.markdown(
-                _("**Page:** ")
-                + str(doc.metadata["page"] + 1)
-                + ";"
-                + 5 * "&nbsp;"
-                + _("**File:** _")
-                + doc.metadata["source"]
-                + "_"
-            )
-            st.markdown(doc.page_content)
-            st.divider()
+        display_docs(
+            ss["debug"].get("answer", "").get("selected_docs", ""), ss.get("question")
+        )
 
 
 def ui_debug():
