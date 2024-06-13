@@ -3,51 +3,16 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-chart_data = pd.DataFrame(
-   {
-       "col1": list(range(20)) * 3,
-       "col2": np.random.randn(60),
-       "col3": ["A"] * 20 + ["B"] * 20 + ["C"] * 20,
-   }
-)
-
-st.bar_chart(chart_data, x="col1", y="col2", color="col3")
-
 df_ = pd.read_csv("./papers/datasets/one_shot_classif.csv")
 
-#st.write(df)
-st.bar_chart(df_, x="author", y="page_content" , color="category")
-
-import matplotlib.pyplot as plt
-import numpy as np
-
-
-
-# Some example data to display
-x = np.linspace(0, 2 * np.pi, 400)
-y = np.sin(x ** 2)
-fig, (ax1, ax2) = plt.subplots(1, 2)
-fig.suptitle('Horizontally stacked subplots')
-ax1.plot(x, y)
-ax2.plot(x, -y)
-st.pyplot(plt.gcf())
-
-
-# Sample Data (replace with your actual data)
-data = {'category': ['A', 'A', 'B', 'B', 'C', 'C'], 'value1': [10, 20, 30, 40, 50, 60], 'value2': [5, 15, 25, 35, 45, 55]}
-df = pd.DataFrame(data)
-
-st.bar_chart(df_[df_.author== 'Carlos Enrique Ruano Iraheta'], x= "author" ,  y="page_content" , color="category")
-st.pyplot(plt.gcf())
+authors = [df_.author.unique()[i] for i in [0,1,3]]
+st.bar_chart(df_[df_.author== authors[0]], x= "author" ,  y="page_content" , color="category")
 
 # Create container for subplots (optional for better layout)
 st.container()
-
 # Create 3 columns for side-by-side display
 #authors = df_.author.unique()
-authors = [df_.author.unique()[i] for i in [0,1,3]]
-
-#st.write(cols)
+authors = [str(df_.author.unique()[i]) for i in [0,1,2,3]]
 
 #col1, col2, col3 = st.columns(len(authors))
 cols = st.columns(len(authors))
@@ -57,19 +22,92 @@ with cols[0]:
 with cols[1]:
         st.bar_chart(df_[df_.author==authors[0]], x= "author" ,  y="page_content" , color="category")
 with cols[2]:
-        st.bar_chart(df_[df_.author== '7300/166'], x= "author" ,  y="page_content" , color="category")
+        st.bar_chart(df_[df_.author== authors[0]], x= "author" ,  y="page_content" , color="category")
 
 
-# Assuming you have df and authors
+data_example = [
+    ['Cat1', 5.3, None, None, None],
+    ['Cat2', None, None, 12.1, None],
+    ['Cat3', None, None, 3.4, 4.5],
+    ['Cat4', None, 2.8, None, None],
+]
+df_example = pd.DataFrame(data_example
+, columns=['A', 'B', 'C', 'D', 'E'])
 
-for author in authors:
-    author_data = df[df['author'] == author]  # Filter data for each author
+fig, ax = plt.subplots()
 
-    # Debugging steps:
-    print(f"Current author: {author}")
-    print(f"Unique author names in DataFrame: {df['author'].unique()}")  # Print unique author names
-    st.write(author_data)  # Display filtered DataFrame contents
+df_example2 = df_[df_.author== authors[1]]
 
-    # Create the chart (assuming you've verified data)
-    st.bar_chart(author_data.copy(), x="author", y="page_content", color="category")
-    st.title(f"{author}'s Page Content by Category")
+ax = df_example2.plot.bar(stacked=True)
+
+st.set_option('deprecation.showPyplotGlobalUse', False)
+col1, col2, col3 = st.columns(3)
+#st.title('Matplotlib plot')
+#st.pyplot()
+
+
+from bokeh.plotting import figure, show
+
+# generate some values
+x = list(range(1, 50))
+y = [pow(x, 2) for x in x]
+
+# create a new plot
+p = figure()
+# add a line renderer and legend to the plot
+p.line(x, y, legend_label="Temp.")
+# show the results
+#show(p)
+#st.bokeh_chart(p)
+
+
+#######################################################
+
+fruits = ['Apples', 'Pears', 'Nectarines', 'Plums', 'Grapes', 'Strawberries']
+years = ["2015", "2016", "2017"]
+colors = ["#c9d9d3", "#718dbf", "#e84d60"]
+
+data = {'fruits' : fruits,
+        '2015'   : [2, 1, 4, 3, 2, 4],
+        '2016'   : [5, 3, 4, 2, 4, 6],
+        '2017'   : [3, 2, 4, 4, 5, 3]}
+
+p = figure(x_range=fruits, height=250, title="Fruit Counts by Year",
+           toolbar_location=None, tools="hover", tooltips="$name @fruits: @$name")
+
+p.vbar_stack(years, x='fruits', width=0.9, color=colors, source=data,
+             legend_label=years)
+st.bokeh_chart(p)
+
+
+from bokeh.plotting import figure, show
+from bokeh.models import ColumnDataSource, HoverTool
+data = df_#[df_.author == authors[0]]
+
+# Extract data for separate bars (assuming "page_content" represents document size)
+documents = data["page_content"].tolist()  # List of document sizes
+categories = data["category"].tolist()  # List of categories
+
+placeholder = "No data"  # Choose an appropriate placeholder
+categories = [category if not pd.isna(category) else placeholder for category in categories]
+
+# Create a single document size (all bars will have this height)
+# You can adjust this value based on your needs
+document_size = 10  # Replace with the desired height
+
+# Create a ColumnDataSource
+source = ColumnDataSource(data=dict(documents=documents, categories=categories, document_size=[document_size] * len(documents)))
+
+# Create the Bokeh figure
+p = figure(x_range=categories, y_range=(0, document_size + 1))  # Adjust y-axis range slightly
+
+# Create stacked bars with color based on category
+p.vbar_stack("documents", x="categories", source=source, color="categories", legend_label=categories)
+
+# Optional: Add hover tool to display document size on hover
+hover = HoverTool()
+hover.tooltips = [("Category", "@categories"), ("Document size", "@documents")]
+p.add_tools(hover)
+
+# Display the plot
+st.bokeh_chart(p)
