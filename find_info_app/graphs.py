@@ -37,7 +37,7 @@ class Prepare_plot:
     
     def head_df(self,n=1):
         print(self.df.head(n))
-
+    
     def pivot_df(self):
         self.df2 = self.df.copy().filter(['source', 'author','category','racional','page_content'])
         self.df2["file_name"]= self.df2.source.apply(lambda x: Path(x).name)
@@ -56,6 +56,12 @@ class Prepare_plot:
                      }
         print("data: Bokeh Ready!")
 
+    @st.cache_data
+    # Rename argument to '_self', because it should not be hashable
+    # If the only parameter is not hashable, does the
+    def get_df(_self):
+        return _self.df    
+    
     def run_plot(self):
         n_catego = len(self.column_names)
         original_palette = palettes.Category20[n_catego]
@@ -74,13 +80,14 @@ class Prepare_plot:
         p.add_layout(Legend(), place='right')  #'below'
         p.xaxis.major_label_orientation = -45
         p.xaxis.major_label_text_align='center'
-        p.legend.click_policy='hide' #"mute" 
+        p.legend.click_policy='mute' #'hide' 
 
         p.vbar_stack(
             stackers=self.column_names, 
             x='index', 
             source=source,
             color = custom_palette,
+            muted_alpha=0.2,
             legend_label = [cat[:39] for cat in self.column_names]
             )
-        show(p)
+        st.bokeh_chart(p) #show(p)
