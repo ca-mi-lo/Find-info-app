@@ -12,6 +12,7 @@ from bokeh.models import ColumnDataSource, FactorRange
 from bokeh.plotting import figure, show
 import bokeh.palettes as palettes
 from bokeh.models import Legend, Label
+#pip install --force-reinstall --no-deps bokeh==2.4.3
 
 ############################################################
 class DataProcessor:

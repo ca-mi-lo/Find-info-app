@@ -13,6 +13,7 @@ langchain = "^0.1.5"
 langchain-google-genai = "^0.0.7"
 chromadb = "^0.4.22"
 pypdf = "^4.0.1"
+bokeh = "2.4.3"
 
 
 [tool.poetry.group.elasticsearch.dependencies]
