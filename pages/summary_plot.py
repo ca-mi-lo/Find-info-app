@@ -24,8 +24,8 @@ if "file_name" not in ss:
 if "df" not in ss:
     ss["df"] = pd.DataFrame()
 
-def calculate_page_number(df=ss["df"], page_size=5):
-  df["page_number"] = (df.index // page_size) + 1
+def calculate_page_number(df, page_size=5):
+  df["page_number"] = (df.reset_index(drop=True).index // page_size) + 1
   return df
 
 with st.form(key='my_form'):
@@ -54,13 +54,16 @@ with st.form(key='my_form'):
         ss["df"] = ss["df"][ss["df"].file_name == choose_file]
 
 
-
-    ss["df"] = calculate_page_number(ss["df"])  # .copy() Apply calculation to a copy to avoid modifying original DataFrame
+    ss["df"] = calculate_page_number(ss["df"])  
+    #WHY IS THIS DF paging with thwe 
+    # .copy() Apply calculation to a copy to avoid modifying original DataFrame
     page_size = 5
+    
     current_page = st.number_input("Página:", min_value=1, max_value=int(len(ss["df"]) / page_size) + 1)
+    
     df_filtered = ss["df"][ss["df"].page_number == current_page]
 
-    for index, row in df_filtered.iterrows():
+    for index, row in ss["df"].iterrows():
 
         text = row["page_content"]
         text = re.sub(r"\n\s*\n", "\n\n", text)  # Replace multiple newlines with a single one
