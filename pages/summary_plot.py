@@ -63,7 +63,7 @@ with st.form(key='my_form'):
     
     df_filtered = ss["df"][ss["df"].page_number == current_page]
 
-    for index, row in ss["df"].iterrows():
+    for index, row in df_filtered.iterrows():
 
         text = row["page_content"]
         text = re.sub(r"\n\s*\n", "\n\n", text)  # Replace multiple newlines with a single one
