@@ -57,9 +57,9 @@ class Prepare_plot:
                      }
         print("data: Bokeh Ready!")
 
-    @st.cache_data
     # Rename argument to '_self', because it should not be hashable
     # If the only parameter is not hashable, does the
+    @st.cache_data
     def get_df(_self):
         return _self.df    
     
