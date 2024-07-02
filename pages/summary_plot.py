@@ -27,29 +27,38 @@ if "file_name" not in ss:
 if "df" not in ss:
     ss["df"] = pd.DataFrame()
 
+if "skip_metadata" not in ss:
+    ss["skip_metadata"] = True
+
 
 #Quizás debería de vivir en prompts.py
 def calculate_page_number(df, page_size=5):
   df["page_number"] = (df.reset_index(drop=True).index // page_size) + 1
   return df
 
-
-def ui_show_debug():
-    st.checkbox("show debug section", key="show_debug")
-
 def prepare_pager():
     
-    skip_metadata = st.sidebar.checkbox("Skip category 'Metadatos'", value=True) 
-    ss["skip_metadata"] = skip_metadata
-    my_plot = grf.Prepare_plot(skip_metadata=skip_metadata)
+    #ss["skip_metadata"] = skip_metadata
+    my_plot = grf.Prepare_plot(skip_metadata = ss["skip_metadata"])
     
-    if skip_metadata:
-        my_plot.filter_metadata(skip_metadata=ss["skip_metadata"])
+    def comments():
+        '''
+        La reactividad del checkbox aun no funciona, pero está todo puesto para que ss["skip_metadata"] = True
+        skip_metadata = st.sidebar.checkbox("Skip category 'Metadatos'",
+                                            value = True, 
+                                            on_change = my_plot.filter_metadata,
+                                            args=[ss["skip_metadata"]])
+        '''
+
+    my_plot = grf.Prepare_plot(skip_metadata = ss["skip_metadata"])
+    
+    if ss["skip_metadata"]:
+        ss["df"] = my_plot.filter_metadata(skip_metadata = ss["skip_metadata"])
         #ss["df"] = ss["df"][ss["df"]["category"]!="Metadatos"]
 
     ss["df"] = my_plot.get_df()
     
-    if skip_metadata:
+    if ss["skip_metadata"]:
         ss["df"] = my_plot.filter_metadata(skip_metadata=ss["skip_metadata"])
     ss["df"]["file_name"]= ss["df"].source.apply(lambda x: Path(x).name)
     ss["df"] = ss["df"][['page_content','category','file_name', 'racional']]
@@ -72,7 +81,6 @@ def prepare_pager():
         ss["df_filtered"] = ss["df"]
         ss["df_filtered"] = ss["df_filtered"][ss["df"].file_name == choose_file]
         
-
     
     if choose_file != 'all':
         ss["df"] = ss["df"][ss["df"].file_name == choose_file].reset_index(drop=True)
@@ -89,9 +97,9 @@ def prepare_pager():
     ss["df_filtered"] = df_filtered
 
 #def render_pager():
-    header = []
+    
     for index, row in ss["df_filtered"].iterrows():
-        
+        header = []
         file_name = ss["df_filtered"]["file_name"].unique()
         
         if (len(file_name)==1):
@@ -112,7 +120,7 @@ def prepare_pager():
         
         
         header = f"**Chunk {index + 1}:** _" + 5 * "&nbsp;" + file_name + "_" + 5*"&nbsp;" + str(ss["categos"])
-        st.markdown(header if isinstance(header, str) else header[-1])
+        st.markdown(header if isinstance(header, str) else "")#header[-1]
         #st.text(text)
         font_size = '14px'
         font_fam = 'Arial'
@@ -122,8 +130,3 @@ def prepare_pager():
         st.divider()
 
 prepare_pager()
-
-
-
-
-############################################################################
