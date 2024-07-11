@@ -50,11 +50,11 @@ def prepare_pager():
                                             args=[ss["skip_metadata"]])
         '''
 
-    my_plot = grf.Prepare_plot(skip_metadata = ss["skip_metadata"])
+    my_plot = grf.Prepare_plot(path= './papers/datasets/Murcielagos_one_shot_classif_4.csv', skip_metadata = ss["skip_metadata"])
     
     if ss["skip_metadata"]:
         ss["df"] = my_plot.filter_metadata(skip_metadata = ss["skip_metadata"])
-        #ss["df"] = ss["df"][ss["df"]["category"]!="Metadatos"]
+        #ss["df"] = ss["df"][ss["df"]["category"]!="Introducción"]
 
     ss["df"] = my_plot.get_df()
     

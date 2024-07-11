@@ -35,6 +35,7 @@ class Prepare_plot():
             """Filters data based on skip_metadata flag."""
             if skip_metadata:
                 self.df = self.df[self.df.category != 'Metadatos']
+                self.df = self.df[self.df.category != 'Introducción']
             return self.df
 
     def head_df(self,n=1):
