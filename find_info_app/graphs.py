@@ -43,7 +43,7 @@ class Prepare_plot():
     
     def pivot_df(self):
         self.df2 = self.filter_metadata()
-        self.df2 = self.df.copy().filter(['source', 'author','category','racional','page_content'])
+        self.df2 = self.df.copy().filter(['source', 'author','category','racional','page_content','page'])
 
         self.df2["file_name"]= self.df2.source.apply(lambda x: Path(x).name)
         self.df2 = self.df2.groupby(['file_name', 'category'])[['page_content']]\

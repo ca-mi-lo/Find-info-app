@@ -61,7 +61,7 @@ def prepare_pager():
     if ss["skip_metadata"]:
         ss["df"] = my_plot.filter_metadata(skip_metadata=ss["skip_metadata"])
     ss["df"]["file_name"]= ss["df"].source.apply(lambda x: Path(x).name)
-    ss["df"] = ss["df"][['page_content','category','file_name', 'racional']]
+    ss["df"] = ss["df"][['page_content','category','file_name', 'racional','page']]
 
     my_plot.run_plot()
 
@@ -91,7 +91,7 @@ def prepare_pager():
     ss["df"] = calculate_page_number(ss["df"])
     page_size = 5
 
-    current_page = st.number_input("Página:", min_value=1, max_value=int(len(ss["df"]) / page_size) + 1)
+    current_page = st.number_input("Hoja:", min_value=1, max_value=int(len(ss["df"]) / page_size) + 1)
 
     df_filtered = ss["df"][ss["df"].page_number == current_page]
     ss["df_filtered"] = df_filtered
@@ -112,6 +112,7 @@ def prepare_pager():
         else: 
             ss["categos"] = row["category"]
 
+        page = row['page']
         text = row["page_content"]
         text = re.sub(r"\n\s*\n", "\n\n", text)  # Replace multiple newlines with a single one
         text = text.replace("\n\n",'\n')
@@ -119,7 +120,7 @@ def prepare_pager():
         text = text.replace("A ´ ",'Á').replace("E ´",'É').replace("I ´",'Í').replace("o ´",'Ó')
         
         
-        header = f"**Chunk {index + 1}:** _" + 5 * "&nbsp;" + file_name + "_" + 5*"&nbsp;" + str(ss["categos"])
+        header = f"**Page {page + 1}:** _" + 5 * "&nbsp;" + file_name + "_" + 5*"&nbsp;" + str(ss["categos"])
         st.markdown(header if isinstance(header, str) else "")#header[-1]
         #st.text(text)
         font_size = '14px'
