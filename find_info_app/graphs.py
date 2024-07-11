@@ -88,7 +88,7 @@ class Prepare_plot():
 
         source = ColumnDataSource(self.data)
 
-        p = figure(x_range= self.data.get('index'))
+        p = figure(x_range= self.data.get('index'), width=800, height=800)
         p.add_layout(Legend(), place='right')  #'below'
         p.xaxis.major_label_orientation = -45
         p.xaxis.major_label_text_align='center'

@@ -120,7 +120,7 @@ def prepare_pager():
         text = text.replace("A ´ ",'Á').replace("E ´",'É').replace("I ´",'Í').replace("o ´",'Ó')
         
         
-        header = f"**Page {page + 1}:** _" + 5 * "&nbsp;" + file_name + "_" + 5*"&nbsp;" + str(ss["categos"])
+        header = f"**Page {page}:** _" + 5 * "&nbsp;" + file_name + "_" + 5*"&nbsp;" + str(ss["categos"])
         st.markdown(header if isinstance(header, str) else "")#header[-1]
         #st.text(text)
         font_size = '14px'
