@@ -16,7 +16,7 @@ from bokeh.models import Legend, Label
 
 ############################################################
 class Prepare_plot():
-    def __init__(self, path = "./papers/datasets/one_shot_classif.csv",  skip_metadata=True):
+    def __init__(self, path = "./datasets/by_species/Melipona_beecheii.csv",  skip_metadata=True):
         print("Reading csv..")
         self.path = path
         self.skip_metadata = skip_metadata
@@ -43,7 +43,7 @@ class Prepare_plot():
     
     def pivot_df(self):
         self.df2 = self.filter_metadata()
-        self.df2 = self.df.copy().filter(['source', 'author','category','racional','page_content','page'])
+        self.df2 = self.df.copy().filter(['source','species_folder', 'author','category','racional','page_content','page'])
 
         self.df2["file_name"]= self.df2.source.apply(lambda x: Path(x).name)
         self.df2 = self.df2.groupby(['file_name', 'category'])[['page_content']]\

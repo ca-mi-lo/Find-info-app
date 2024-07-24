@@ -3,6 +3,7 @@ import re
 import pandas as pd
 import numpy as np
 from pathlib import Path
+import os
 import find_info_app.graphs as grf
 ###########################################################################
 
@@ -11,10 +12,11 @@ st.set_page_config(page_title="Classifier",
                    layout="wide"
                    )
 
+folder_path = Path("./datasets/by_species/")
+species_folders = os.listdir(folder_path)
 
-path = "./datasets/one_shot_classif_4.csv"
+path = "./datasets/by_species/Melipona_beecheii.csv"
 st.subheader("Búsqueda por Categoría")
-
 
 # Init Session state
 ss = st.session_state
@@ -55,7 +57,8 @@ def prepare_pager():
         '''
 
     
-    my_plot = grf.Prepare_plot(path= './datasets/Murcielagos_one_shot_classif_4.csv', skip_metadata = ss["skip_metadata"])
+    my_plot = grf.Prepare_plot(path=path, skip_metadata = ss["skip_metadata"])
+    #(path= './papers/datasets/Murcielagos_one_shot_classif_4.csv'
     
     if ss["skip_metadata"]:
         ss["df"] = my_plot.filter_metadata(skip_metadata = ss["skip_metadata"])
@@ -66,7 +69,7 @@ def prepare_pager():
     if ss["skip_metadata"]:
         ss["df"] = my_plot.filter_metadata(skip_metadata=ss["skip_metadata"])
     ss["df"]["file_name"]= ss["df"].source.apply(lambda x: Path(x).name)
-    ss["df"] = ss["df"][['page_content','category','file_name', 'racional','page']]
+    ss["df"] = ss["df"][['species_folder','page_content','category','file_name', 'racional','page']]
 
     my_plot.run_plot()
 
@@ -77,9 +80,14 @@ def prepare_pager():
     file_name = pd.concat([pd.Series(['all']), ss["df"]['file_name']])\
                         .drop_duplicates()\
                         .dropna()
+    
+    species_folders = pd.concat([pd.Series(['None']), ss["df"]['species_folder']])\
+                        .drop_duplicates()\
+                        .dropna()
 
     choose_catego = st.sidebar.selectbox('Categoría:', catego) 
     choose_file = st.sidebar.selectbox('File_name:', file_name)
+    choose_species = st.sidebar.selectbox('Especie:', species_folders)
 
     if choose_catego != 'all':
         ss["df"] = ss["df"][ss["df"].category == choose_catego].reset_index(drop=True)
@@ -93,6 +101,11 @@ def prepare_pager():
         ss["df_filtered"] = ss["df_filtered"][ss["df"].category == choose_catego]
 
 
+    if choose_species != None:
+        ss["df"] = ss["df"][ss["df"].species_folder == choose_species].reset_index(drop=True)
+        ss["df_filtered"] = ss["df"]
+        ss["df_filtered"] = ss["df_filtered"][ss["df"].category == choose_catego]
+        ss["df_filtered"] = ss["df_filtered"][ss["df"].file_name == choose_file]
 
     ss["df"] = calculate_page_number(ss["df"])
     page_size = 5
