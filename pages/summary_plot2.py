@@ -40,10 +40,10 @@ def ss_init():
         ss["current_page"]=1
 
 def filter_metadata(df, skip_metadata=True, 
-                    species = 'Melipona_beecheii',
+                    species = 'all',
                     catego='all',
                     file_name='all',
-                    current_page=1
+                    #current_page=1
                     ):
 
     """Filters data based on skip_metadata flag."""
@@ -66,7 +66,7 @@ def filter_metadata(df, skip_metadata=True,
     else: 
         df = df[df.source == file_name]
     #----------------------------------------------------        
-    df = df[df.page_number == current_page]
+    #df = df[df.page_number == current_page]
 
     return df
 
@@ -77,21 +77,23 @@ def update_filter():
                             species=choose_species,
                             catego=choose_catego,
                             file_name=choose_file,
-                            current_page=ss["current_page"]
+                            #current_page=ss["current_page"]
                             )
 
 def calculate_page_number(df, page_size=5):
   df["page_number"] = (df.reset_index(drop=True).index // page_size) + 1
   return df
 
-def render_pager():    
+def render_pager():
+    ss["df_filtered"] = ss["df"][ss["df"].page_number == ss["current_page"]]
+    update_filter()    
     for index, row in ss["df_filtered"].iterrows():
         header = []
         file_name = ss["df_filtered"]["source"].unique()
         
         if (len(file_name)==1):
             file_name =str(file_name[0])
-        else: row["file_name"]
+        else: row["source"]
 
         ss["categos"] = ss["df_filtered"]["category"].unique()
         if (len(ss["categos"])==1):
