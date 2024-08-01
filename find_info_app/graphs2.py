@@ -36,7 +36,7 @@ class load_data():
         self.df = self.df.filter(['source','species_folder', 'author','category','racional','page_content','page'])
 
     def filter_metadata(self, skip_metadata=True, 
-                        species = 'Melipona_beecheii',
+                        species = 'all',
                         catego='all',
                         file_name='all'
                         ):

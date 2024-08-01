@@ -36,8 +36,15 @@ def ss_init():
 
     if "skip_metadata" not in ss:
         ss["skip_metadata"] = True
+
     if "current_page" not in ss:
         ss["current_page"]=1
+    
+    if "page_size" not in ss:
+        ss["page_size"]=5
+
+
+ss_init()
 
 def filter_metadata(df, skip_metadata=True, 
                     species = 'all',
@@ -46,7 +53,7 @@ def filter_metadata(df, skip_metadata=True,
                     #current_page=1
                     ):
 
-    """Filters data based on skip_metadata flag."""
+    ss["df"] = calculate_page_number(ss["df"])
     if skip_metadata:
         df = df[df.category != 'Metadatos']
         df = df[df.category != 'Introducción']
@@ -71,6 +78,7 @@ def filter_metadata(df, skip_metadata=True,
     return df
 
 def update_filter():
+    ss["df"] = calculate_page_number(ss["df"])
     ss["df_filtered"] = filter_metadata(
                             ss["df"],
                             skip_metadata= choose_metadata,
@@ -79,13 +87,14 @@ def update_filter():
                             file_name=choose_file,
                             #current_page=ss["current_page"]
                             )
+    ss["df_filtered"] = calculate_page_number(ss["df_filtered"])
+    ss["df_filtered"] = ss["df_filtered"][ss["df_filtered"].page_number == ss["current_page"]]
 
 def calculate_page_number(df, page_size=5):
   df["page_number"] = (df.reset_index(drop=True).index // page_size) + 1
   return df
 
 def render_pager():
-    ss["df_filtered"] = ss["df"][ss["df"].page_number == ss["current_page"]]
     update_filter()    
     for index, row in ss["df_filtered"].iterrows():
         header = []
@@ -120,9 +129,7 @@ def render_pager():
         st.divider()
 
 
-ss_init()
-ss["df"] = calculate_page_number(ss["df"])
-page_size = 5
+#ss_init()
 
 species = pd.concat([pd.Series(['all']), ss["df"]['species_folder']])\
                         .drop_duplicates().dropna()
@@ -136,23 +143,24 @@ file_name = pd.concat([pd.Series(['all']), ss["df"]['source']])\
 choose_species = st.sidebar.selectbox('Especie:', species) #, on_change=update_filter
 choose_catego = st.sidebar.selectbox('Categoría:', catego) 
 choose_file = st.sidebar.selectbox('File_name:', file_name)
-choose_metadata = st.sidebar.radio("Catagoría Bibliografía",
+choose_metadata = st.sidebar.radio("Categoría Bibliografía",
              ["Ocultar", "Mostrar"], index =0)
 
 #current_page = st.number_input("Hoja:", min_value=1, max_value=int(len(ss["df"]) / page_size) + 1)
 
 update_filter()
 
-# ui layout
 #########################################################################
+# Main
+
 st.subheader("Búsqueda por Categoría")
 
-choose_species, choose_catego
+choose_species, choose_catego,choose_file, choose_metadata
 ss["my_plot"].pivot_df()
 ss["my_plot"].run_plot()
 
-#ss["df_filtered"]
 
-ss["current_page"] = st.number_input("Hoja:", min_value=1, max_value=int(len(ss["df"]) / page_size) + 1)
+ss["current_page"] = st.number_input("Hoja:", min_value=1, max_value=int(len(ss["df"]) / ss["page_size"]) + 1)
 render_pager()
 
+#ss["df_filtered"]
