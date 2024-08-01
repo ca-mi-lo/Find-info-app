@@ -3,114 +3,105 @@ import re
 import pandas as pd
 import numpy as np
 from pathlib import Path
+import os
 import find_info_app.graphs as grf
 ###########################################################################
 
 st.set_page_config(page_title="Classifier",
                    page_icon="📊", 
-                   layout="wide"
+                   layout="wide",
+                    initial_sidebar_state="expanded"
                    )
-
-
-path = "./datasets/one_shot_classif_4.csv"
-st.subheader("Búsqueda por Categoría")
-
 
 # Init Session state
 ss = st.session_state
 
-if "species_path" not in ss:
-    ss["species_path"] = []
-
-if "catego" not in ss:
-    ss["catego"] = []
-
-if "file_name" not in ss:
-    ss["file_name"] = []
-
-if "df" not in ss:
-    ss["df"] = pd.DataFrame()
-
-if "skip_metadata" not in ss:
-    ss["skip_metadata"] = True
+folder_path = Path("./datasets/by_species/")
+file_list = os.listdir(folder_path)
 
 
-#Quizás debería de vivir en prompts.py
+def ss_init():
+    if "my_plot" not in ss:
+        ss["my_plot"] = grf.load_data(folder_path = folder_path,  skip_metadata=False)
+    
+    if "df" not in ss:
+        ss["df"] = ss["my_plot"].df
+
+    if "df_filtered" not in ss:
+        ss["df_filtered"] = ss["df"]
+    
+    if "df" not in ss:
+        ss["df"] = pd.DataFrame()
+
+    if "skip_metadata" not in ss:
+        ss["skip_metadata"] = True
+
+    if "current_page" not in ss:
+        ss["current_page"]=1
+    
+    if "page_size" not in ss:
+        ss["page_size"]=5
+
+
+ss_init()
+
+def filter_metadata(df, skip_metadata=True, 
+                    species = 'all',
+                    catego='all',
+                    file_name='all',
+                    #current_page=1
+                    ):
+
+    ss["df"] = calculate_page_number(ss["df"])
+    if skip_metadata:
+        df = df[df.category != 'Metadatos']
+        df = df[df.category != 'Introducción']
+    
+    if species == 'all':
+        df = df
+    else:
+        df = df[df.species_folder == species]
+    #----------------------------------------------------
+    if catego == 'all':
+        df = df
+    else: 
+        df = df[df.category == catego]
+    #----------------------------------------------------
+    if file_name == 'all':
+        df = df
+    else: 
+        df = df[df.source == file_name]
+    #----------------------------------------------------        
+    #df = df[df.page_number == current_page]
+
+    return df
+
+def update_filter():
+    ss["df"] = calculate_page_number(ss["df"])
+    ss["df_filtered"] = filter_metadata(
+                            ss["df"],
+                            skip_metadata= choose_metadata,
+                            species=choose_species,
+                            catego=choose_catego,
+                            file_name=choose_file,
+                            #current_page=ss["current_page"]
+                            )
+    ss["df_filtered"] = calculate_page_number(ss["df_filtered"])
+    ss["df_filtered"] = ss["df_filtered"][ss["df_filtered"].page_number == ss["current_page"]]
+
 def calculate_page_number(df, page_size=5):
   df["page_number"] = (df.reset_index(drop=True).index // page_size) + 1
   return df
 
-def prepare_pager():
-    
-    #ss["skip_metadata"] = skip_metadata
-    my_plot = grf.Prepare_plot(skip_metadata = ss["skip_metadata"])
-    
-    def comments():
-        '''
-        La reactividad del checkbox aun no funciona, pero está todo puesto para que ss["skip_metadata"] = True
-        skip_metadata = st.sidebar.checkbox("Skip category 'Metadatos'",
-                                            value = True, 
-                                            on_change = my_plot.filter_metadata,
-                                            args=[ss["skip_metadata"]])
-        '''
-
-    
-    my_plot = grf.Prepare_plot(path= './datasets/Murcielagos_one_shot_classif_4.csv', skip_metadata = ss["skip_metadata"])
-    
-    if ss["skip_metadata"]:
-        ss["df"] = my_plot.filter_metadata(skip_metadata = ss["skip_metadata"])
-        #ss["df"] = ss["df"][ss["df"]["category"]!="Introducción"]
-
-    ss["df"] = my_plot.get_df()
-    
-    if ss["skip_metadata"]:
-        ss["df"] = my_plot.filter_metadata(skip_metadata=ss["skip_metadata"])
-    ss["df"]["file_name"]= ss["df"].source.apply(lambda x: Path(x).name)
-    ss["df"] = ss["df"][['page_content','category','file_name', 'racional','page']]
-
-    my_plot.run_plot()
-
-    catego = pd.concat([pd.Series(['all']), ss["df"]['category']])\
-                        .drop_duplicates()\
-                        .dropna()
-
-    file_name = pd.concat([pd.Series(['all']), ss["df"]['file_name']])\
-                        .drop_duplicates()\
-                        .dropna()
-
-    choose_catego = st.sidebar.selectbox('Categoría:', catego) 
-    choose_file = st.sidebar.selectbox('File_name:', file_name)
-
-    if choose_catego != 'all':
-        ss["df"] = ss["df"][ss["df"].category == choose_catego].reset_index(drop=True)
-        ss["df_filtered"] = ss["df"]
-        ss["df_filtered"] = ss["df_filtered"][ss["df"].file_name == choose_file]
-        
-    
-    if choose_file != 'all':
-        ss["df"] = ss["df"][ss["df"].file_name == choose_file].reset_index(drop=True)
-        ss["df_filtered"] = ss["df"]
-        ss["df_filtered"] = ss["df_filtered"][ss["df"].category == choose_catego]
-
-
-
-    ss["df"] = calculate_page_number(ss["df"])
-    page_size = 5
-
-    current_page = st.number_input("Hoja:", min_value=1, max_value=int(len(ss["df"]) / page_size) + 1)
-
-    df_filtered = ss["df"][ss["df"].page_number == current_page]
-    ss["df_filtered"] = df_filtered
-
-#def render_pager():
-    
+def page_render():
+    update_filter()    
     for index, row in ss["df_filtered"].iterrows():
         header = []
-        file_name = ss["df_filtered"]["file_name"].unique()
+        file_name = ss["df_filtered"]["source"].unique()
         
         if (len(file_name)==1):
             file_name =str(file_name[0])
-        else: row["file_name"]
+        else: row["source"]
 
         ss["categos"] = ss["df_filtered"]["category"].unique()
         if (len(ss["categos"])==1):
@@ -136,4 +127,39 @@ def prepare_pager():
 
         st.divider()
 
-prepare_pager()
+
+#ss_init()
+
+species = pd.concat([pd.Series(['all']), ss["df"]['species_folder']])\
+                        .drop_duplicates().dropna()
+
+catego = pd.concat([pd.Series(['all']), ss["df"]['category']])\
+                        .drop_duplicates().dropna()
+
+file_name = pd.concat([pd.Series(['all']), ss["df"]['source']])\
+                        .drop_duplicates().dropna()
+
+choose_species = st.sidebar.selectbox('Especie:', species) #, on_change=update_filter
+choose_catego = st.sidebar.selectbox('Categoría:', catego) 
+choose_file = st.sidebar.selectbox('File_name:', file_name)
+choose_metadata = st.sidebar.radio("Categoría Bibliografía",
+             ["Ocultar", "Mostrar"], index =0)
+
+#current_page = st.number_input("Hoja:", min_value=1, max_value=int(len(ss["df"]) / page_size) + 1)
+
+update_filter()
+
+#########################################################################
+# Main
+
+st.subheader("Búsqueda por Categoría")
+
+choose_species, choose_catego,choose_file, choose_metadata
+ss["my_plot"].pivot_df()
+ss["my_plot"].run_plot()
+
+
+ss["current_page"] = st.number_input("Hoja:", min_value=1, max_value=int(len(ss["df"]) / ss["page_size"]) + 1)
+page_render()
+
+#ss["df_filtered"]

@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import os
 
 from pathlib import Path
 from collections import OrderedDict
@@ -15,31 +16,52 @@ from bokeh.models import Legend, Label
 #pip install --force-reinstall --no-deps bokeh==2.4.3
 
 ############################################################
-class Prepare_plot():
-    def __init__(self, path = "./datasets/by_species/Melipona_beecheii.csv",  skip_metadata=True):
-        print("Reading csv..")
-        self.path = path
+
+class load_data():
+
+    def __init__(self, folder_path = "./datasets/by_species/sdfnmksdfajkldf",  skip_metadata=True):
+        print("Reading csv's..")
+        self.folder_path = "./datasets/by_species/"
         self.skip_metadata = skip_metadata
-        try:
-            self.df = pd.read_csv(path)
-            print("Read successfully")
-            self.head_df(n=3)
-        except:
-            print("Pending: Add debugger")
-            print(path)
-    
-        finally:
-            self.pivot_df()
+        self.df = pd.DataFrame()
+        self.file_list = []
+        
+        for root, _, files in os.walk(folder_path):
+            for file in files:
+                print(f"Reading {file}")
+                self.full_path = os.path.join(root, file)
+                self.df = pd.concat([self.df, pd.read_csv(self.full_path)], ignore_index = True)
+                self.file_list.append(self.full_path)
+        
+        self.df = self.df.filter(['source','species_folder', 'author','category','racional','page_content','page'])
 
-    def filter_metadata(self, skip_metadata=True):
-            """Filters data based on skip_metadata flag."""
-            if skip_metadata:
-                self.df = self.df[self.df.category != 'Metadatos']
-                self.df = self.df[self.df.category != 'Introducción']
-            return self.df
+    def filter_metadata(self, skip_metadata=True, 
+                        species = 'all',
+                        catego='all',
+                        file_name='all'
+                        ):
 
-    def head_df(self,n=1):
-        print(self.df.head(n))
+        """Filters data based on skip_metadata flag."""
+        if skip_metadata:
+            self.df = self.df[self.df.category != 'Metadatos']
+            self.df = self.df[self.df.category != 'Introducción']
+        
+        if species == 'all':
+            self.df = self.df
+        else:
+            self.df = self.df[self.df.species_folder == species]
+        #----------------------------------------------------
+        if catego == 'all':
+            self.df = self.df
+        else: 
+            self.df = self.df[self.df.category == catego]
+        #----------------------------------------------------
+        if file_name == 'all':
+            self.df = self.df
+        else: 
+            self.df = self.df[self.df.source == file_name]
+                
+        return self.df
     
     def pivot_df(self):
         self.df2 = self.filter_metadata()
@@ -61,30 +83,11 @@ class Prepare_plot():
                      }
         print("data: Bokeh Ready!")
 
-    # Rename argument to '_self', because it should not be hashable
-    # If the only parameter is not hashable, does the
-    @st.cache_data
-    def get_df(_self):
-        return _self.df    
     
     def run_plot(self):
         
         n_catego = len(self.column_names)
         original_palette = palettes.Category20[n_catego]
-
-        '''
-        gray_color = "#F0F0F0" #"#E0E0E0"
-        category_colors = {
-            category: color
-            for category, color in zip(self.column_names, original_palette)
-            if category != "Metadatos"
-        }
-        
-        if not self.skip_metadata:
-            category_colors["Metadatos"] = gray_color
-        
-        custom_palette = tuple(category_colors[category] for category in OrderedDict(sorted(category_colors.items())))
-        '''
 
         source = ColumnDataSource(self.data)
 
@@ -104,3 +107,4 @@ class Prepare_plot():
             legend_label = [cat[:39] for cat in self.column_names]
             )
         st.bokeh_chart(p) #show(p)
+    
