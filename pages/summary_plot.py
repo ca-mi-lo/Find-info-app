@@ -15,10 +15,8 @@ st.set_page_config(page_title="Classifier",
 
 # Init Session state
 ss = st.session_state
-
 folder_path = Path("./datasets/by_species/")
 file_list = os.listdir(folder_path)
-
 
 def ss_init():
     if "my_plot" not in ss:
@@ -41,8 +39,6 @@ def ss_init():
     
     if "page_size" not in ss:
         ss["page_size"]=5
-
-
 ss_init()
 
 def filter_metadata(df, skip_metadata=True, 
@@ -127,39 +123,29 @@ def page_render():
 
         st.divider()
 
+def setup_comboboxes():
+    species = pd.concat([pd.Series(['all']), ss["df"]['species_folder']])\
+                            .drop_duplicates().dropna()
 
-#ss_init()
+    catego = pd.concat([pd.Series(['all']), ss["df"]['category']])\
+                            .drop_duplicates().dropna()
 
-species = pd.concat([pd.Series(['all']), ss["df"]['species_folder']])\
-                        .drop_duplicates().dropna()
+    file_name = pd.concat([pd.Series(['all']), ss["df"]['source']])\
+                            .drop_duplicates().dropna()
 
-catego = pd.concat([pd.Series(['all']), ss["df"]['category']])\
-                        .drop_duplicates().dropna()
-
-file_name = pd.concat([pd.Series(['all']), ss["df"]['source']])\
-                        .drop_duplicates().dropna()
-
-choose_species = st.sidebar.selectbox('Especie:', species) #, on_change=update_filter
-choose_catego = st.sidebar.selectbox('Categoría:', catego) 
-choose_file = st.sidebar.selectbox('File_name:', file_name)
-choose_metadata = st.sidebar.radio("Categoría Bibliografía",
-             ["Ocultar", "Mostrar"], index =0)
-
-#current_page = st.number_input("Hoja:", min_value=1, max_value=int(len(ss["df"]) / page_size) + 1)
-
-update_filter()
+    choose_species = st.sidebar.selectbox('Especie:', species) #, on_change=update_filter
+    choose_catego = st.sidebar.selectbox('Categoría:', catego) 
+    choose_file = st.sidebar.selectbox('File_name:', file_name)
+    choose_metadata = st.sidebar.radio("Categoría Bibliografía",
+                ["Ocultar", "Mostrar"], index =0)
+    return choose_species, choose_catego, choose_file, choose_metadata
 
 #########################################################################
 # Main
-
 st.subheader("Búsqueda por Categoría")
-
-choose_species, choose_catego,choose_file, choose_metadata
+choose_species, choose_catego, choose_file, choose_metadata = setup_comboboxes()
+update_filter()
 ss["my_plot"].pivot_df()
 ss["my_plot"].run_plot()
-
-
 ss["current_page"] = st.number_input("Hoja:", min_value=1, max_value=int(len(ss["df"]) / ss["page_size"]) + 1)
 page_render()
-
-#ss["df_filtered"]
