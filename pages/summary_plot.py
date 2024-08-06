@@ -20,7 +20,7 @@ file_list = os.listdir(folder_path)
 
 def ss_init():
     if "my_plot" not in ss:
-        ss["my_plot"] = grf.load_data(folder_path = folder_path,  skip_metadata=False)
+        ss["my_plot"] = grf.load_data(folder_path = folder_path,  skip_metadata=True)
     
     if "df" not in ss:
         ss["df"] = ss["my_plot"].df
@@ -49,7 +49,7 @@ def filter_metadata(df, skip_metadata=True,
                     ):
 
     ss["df"] = calculate_page_number(ss["df"])
-    if skip_metadata:
+    if skip_metadata or skip_metadata=='Ocultar':
         df = df[df.category != 'Metadatos']
         df = df[df.category != 'Introducción']
     
@@ -76,7 +76,7 @@ def update_filter():
     ss["df"] = calculate_page_number(ss["df"])
     ss["df_filtered"] = filter_metadata(
                             ss["df"],
-                            skip_metadata= choose_metadata,
+                            skip_metadata= choose_metadata=="Ocultar",
                             species=choose_species,
                             catego=choose_catego,
                             file_name=choose_file,
@@ -133,7 +133,8 @@ def setup_comboboxes():
     file_name = pd.concat([pd.Series(['all']), ss["df"]['source']])\
                             .drop_duplicates().dropna()
 
-    choose_species = st.sidebar.selectbox('Especie:', species) #, on_change=update_filter
+    choose_species = st.selectbox('Especie:', species) #, on_change=update_filter
+    
     choose_catego = st.sidebar.selectbox('Categoría:', catego) 
     choose_file = st.sidebar.selectbox('File_name:', file_name)
     choose_metadata = st.sidebar.radio("Categoría Bibliografía",
@@ -142,10 +143,13 @@ def setup_comboboxes():
 
 #########################################################################
 # Main
-st.subheader("Búsqueda por Categoría")
+st.subheader("Seleccione la especie para el análisis por categoría")
 choose_species, choose_catego, choose_file, choose_metadata = setup_comboboxes()
 update_filter()
-ss["my_plot"].pivot_df()
-ss["my_plot"].run_plot()
+my_df = grf.df_byspecies(df=ss["df"],species=choose_species, skip_metadata=choose_metadata).get_df()
+my_plot = grf.plot()
+my_plot.prepare(df=my_df)
+my_plot.run_plot()
+choose_metadata
 ss["current_page"] = st.number_input("Hoja:", min_value=1, max_value=int(len(ss["df"]) / ss["page_size"]) + 1)
 page_render()
