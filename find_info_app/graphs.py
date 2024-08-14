@@ -34,38 +34,36 @@ class load_data():
                 self.file_list.append(self.full_path)
         
         self.df = self.df.filter(['source','species_folder', 'author','category','racional','page_content','page'])
+        #self.df = self.df[self.df.category!='Metadatos']
 
-    def filter_metadata(self, skip_metadata=True, 
-                        species = 'all',
-                        catego='all',
-                        file_name='all'
-                        ):
-
-        """Filters data based on skip_metadata flag."""
-        if skip_metadata:
-            self.df = self.df[self.df.category != 'Metadatos']
-            self.df = self.df[self.df.category != 'Introducción']
         
-        if species == 'all':
+
+
+class df_byspecies():
+    
+    def __init__(self,df,species,skip_metadata=True):
+        self.df = df
+        self.species = species
+        self.skip_metadata = skip_metadata
+        
+       
+    def get_df(self):#
+        if self.species == 'all':
             self.df = self.df
         else:
-            self.df = self.df[self.df.species_folder == species]
-        #----------------------------------------------------
-        if catego == 'all':
-            self.df = self.df
-        else: 
-            self.df = self.df[self.df.category == catego]
-        #----------------------------------------------------
-        if file_name == 'all':
-            self.df = self.df
-        else: 
-            self.df = self.df[self.df.source == file_name]
-                
+            self.df = self.df[self.df.species_folder == self.species]
+        
+        if self.skip_metadata=='Ocultar':
+            self.df = self.df[self.df.category!='Metadatos']
+            self.df = self.df[self.df.category!='Introducción']
+        
         return self.df
-    
-    def pivot_df(self):
-        self.df2 = self.filter_metadata()
-        self.df2 = self.df.copy().filter(['source','species_folder', 'author','category','racional','page_content','page'])
+
+
+class plot():
+    def prepare(self,df):
+        self.df2 = df
+        self.df2 = df.filter(['source','species_folder', 'author','category','racional','page_content','page'])
 
         self.df2["file_name"]= self.df2.source.apply(lambda x: Path(x).name)
         self.df2 = self.df2.groupby(['file_name', 'category'])[['page_content']]\
@@ -85,7 +83,6 @@ class load_data():
 
     
     def run_plot(self):
-        
         n_catego = len(self.column_names)
         original_palette = palettes.Category20[n_catego]
 
