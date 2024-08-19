@@ -5,11 +5,15 @@ from typing import IO, Any, Optional
 import langchain_core
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.prompts.prompt import PromptTemplate
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 
-from .pdf import MyAppPDFLoader
-from . import ai
-from .prompts import documents_to_str
+from find_info_app.pdf import MyAppPDFLoader
+import find_info_app.ai as ai
+from find_info_app.prompts import documents_to_str
+
+from find_info_app import create_logger
+
+logger = create_logger(__name__)
 
 
 def init_db(embedding: str) -> Chroma:
@@ -26,6 +30,7 @@ def index_file(
     sha = h.hexdigest()
     filesize = f.tell()
     f.seek(0)
+    logger.info(f"Going to load {filename}...")
     pdf_loader = MyAppPDFLoader(f, source=filename)
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=doc_size, chunk_overlap=doc_overlap
@@ -33,10 +38,12 @@ def index_file(
     t0 = now()  # load_docs
     data = pdf_loader.load_and_split(text_splitter=text_splitter)
     t1 = now()
-
+    logger.info(f"{filename} loaded...")
     # embedding = ai.get_embedding()
     # store = Chroma.from_documents(data, embedding) # optional param: , collection_metadata = {"hnsw:space": "cosine"}
-    ids = db.add_documents(data)
+    logger.info(f"No. of docs to save: {len(data)}")
+    # _ = db.add_documents(data)
+    logger.info(f"{filename} data saved...")
 
     t2 = now()
     # summary_tmpl = PromptTemplate.from_template(

@@ -8,12 +8,13 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.10,<4.0"
-streamlit = "^1.31.0"
-langchain = "^0.1.5"
-langchain-google-genai = "^0.0.7"
-chromadb = "^0.4.22"
-pypdf = "^4.0.1"
-
+streamlit = "^1.37.1"
+langchain = "^0.2.14"
+langchain-google-genai = "^1.0.9"
+langchain-chroma = "^0.1.2"
+pypdf = "^4.3.1"
+bokeh = "3.5.1"
+langchain-community = "^0.2.12"
 
 [tool.poetry.group.elasticsearch.dependencies]
 elasticsearch = "^8.12.1"
