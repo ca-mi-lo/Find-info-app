@@ -1,5 +1,5 @@
-from langchain_google_genai.llms import GoogleGenerativeAI
-from langchain_google_genai.embeddings import GoogleGenerativeAIEmbeddings
+from langchain_google_genai import GoogleGenerativeAI
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
 AVAILABLE_EMBEDDINGS = ["models/embedding-001"]
 AVAILABLE_MODELS = ["gemini-pro"]

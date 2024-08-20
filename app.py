@@ -8,11 +8,11 @@ from find_info_app.ui.display_docs import display_docs
 _ = gettext.gettext
 
 import streamlit as st
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 
 import find_info_app
 from find_info_app.prompts import TASK
-import find_info_app.model as model
+import find_info_app.model
 
 
 if (
@@ -45,18 +45,18 @@ if "logger" not in ss:
 
 logger: logging.Logger = ss["logger"]
 
-if not "pdf_file_list" in ss:
-    # Chicano fix para vaciado de bd
-    logger.debug("Clean db")
-    logger.debug(list(ss.keys()))
-    store = model.init_db(ss["embedding_model"])
-
-    store.delete_collection()
+# if not "pdf_file_list" in ss:
+#     # Chicano fix para vaciado de bd
+#     logger.debug("Clean db")
+#     logger.debug(list(ss.keys()))
+#     store = find_info_app.model.init_db(ss["embedding_model"])
+# 
+#     store.delete_collection()
 
 
 def index_pdf_file():
     if "store" not in ss:
-        ss["store"] = model.init_db(ss["embedding_model"])
+        ss["store"] = find_info_app.model.init_db(ss["embedding_model"])
 
     store: Chroma = ss["store"]
     if ss["pdf_file_list"]:
@@ -65,7 +65,7 @@ def index_pdf_file():
             logger.debug(f"adding file: {file}")
             upload_file = [f for f in ss["pdf_file_list"] if f.name == file][0]
             with st.spinner(_("indexing ") + file):
-                index = model.index_file(
+                index = find_info_app.model.index_file(
                     store,
                     upload_file,
                     file,
@@ -193,7 +193,7 @@ def b_ask():
         # index = ss.get("index_list", [])[0] if ss.get("index_list") else {}
 
         with st.spinner(_("preparing answer")):
-            resp = model.query(
+            resp = find_info_app.model.query(
                 ss["store"],
                 question,
                 task,
