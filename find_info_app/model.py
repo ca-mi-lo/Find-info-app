@@ -42,7 +42,7 @@ def index_file(
     # embedding = ai.get_embedding()
     # store = Chroma.from_documents(data, embedding) # optional param: , collection_metadata = {"hnsw:space": "cosine"}
     logger.info(f"No. of docs to save: {len(data)}")
-    # _ = db.add_documents(data)
+    _ = db.add_documents(data)
     logger.info(f"{filename} data saved...")
 
     t2 = now()

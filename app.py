@@ -45,13 +45,13 @@ if "logger" not in ss:
 
 logger: logging.Logger = ss["logger"]
 
-if not "pdf_file_list" in ss:
-    # Chicano fix para vaciado de bd
-    logger.debug("Clean db")
-    logger.debug(list(ss.keys()))
-    store = find_info_app.model.init_db(ss["embedding_model"])
-
-    store.delete_collection()
+# if not "pdf_file_list" in ss:
+#     # Chicano fix para vaciado de bd
+#     logger.debug("Clean db")
+#     logger.debug(list(ss.keys()))
+#     store = find_info_app.model.init_db(ss["embedding_model"])
+# 
+#     store.delete_collection()
 
 
 def index_pdf_file():
